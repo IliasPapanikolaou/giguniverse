@@ -2,6 +2,7 @@ package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.AuthenticationResponse;
 import com.unipi.giguniverse.dto.LoginRequest;
+import com.unipi.giguniverse.dto.RefreshTokenRequest;
 import com.unipi.giguniverse.dto.RegisterOwnerRequest;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.NotificationEmail;
@@ -35,6 +36,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     public void ownerSignup(RegisterOwnerRequest registerOwnerRequest){
         User owner = new Owner();
@@ -99,7 +101,12 @@ public class AuthService {
                 loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String token = jwtProvider.generateToken(authenticate);
-        return new AuthenticationResponse(token, loginRequest.getEmail());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .email(loginRequest.getEmail())
+                .build();
     }
 
     //Get current logged in user details from DB
@@ -110,8 +117,19 @@ public class AuthService {
                 (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
         Optional<User> userOptional = userRepository.findByEmail(principal.getUsername());
-        User user = userOptional.orElseThrow(()->new ApplicationException("User not found"));
-        return user;
+
+        return userOptional.orElseThrow(()->new ApplicationException("User not found"));
     }
 
+    //Checks if user has UUID RefreshToken in DB, if yes, it refreshes the JWToken
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getEmail());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .email(refreshTokenRequest.getEmail())
+                .build();
+    }
 }

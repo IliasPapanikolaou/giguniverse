@@ -2,11 +2,11 @@ package com.unipi.giguniverse.exceptions;
 
 public class ApplicationException extends RuntimeException{
 
-   public ApplicationException(String message, Exception e){
-       super(message, e);
+   public ApplicationException(String exMessage, Exception exception){
+       super(exMessage, exception);
    }
 
-   public ApplicationException(String message){
-       super(message);
+   public ApplicationException(String exMessage){
+       super(exMessage);
    }
 }
