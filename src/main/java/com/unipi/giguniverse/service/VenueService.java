@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 public class VenueService {
 
     private final VenueRepository venueRepository;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final AuthService authService;
 
 
     public VenueDto addVenue(VenueDto venueDto){
@@ -58,7 +58,7 @@ public class VenueService {
     private Venue mapVenueDto(VenueDto venueDto) {
         return Venue.builder()
                 .venueName(venueDto.getVenueName())
-                .owner((Owner) userDetailsServiceImpl.getCurrentUserDetails())
+                .owner((Owner) authService.getCurrentUserDetails())
                 .address(venueDto.getAddress())
                 .city(venueDto.getCity())
                 .phone(venueDto.getPhone())

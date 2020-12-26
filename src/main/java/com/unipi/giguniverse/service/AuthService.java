@@ -102,4 +102,16 @@ public class AuthService {
         return new AuthenticationResponse(token, loginRequest.getEmail());
     }
 
+    //Get current logged in user details from DB
+    public User getCurrentUserDetails(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+
+        Optional<User> userOptional = userRepository.findByEmail(principal.getUsername());
+        User user = userOptional.orElseThrow(()->new ApplicationException("User not found"));
+        return user;
+    }
+
 }
