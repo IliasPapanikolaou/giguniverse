@@ -1,8 +1,10 @@
 package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.exceptions.ApplicationException;
+import com.unipi.giguniverse.model.Owner;
 import com.unipi.giguniverse.model.User;
 import com.unipi.giguniverse.repository.UserRepository;
+import com.unipi.giguniverse.security.ApplicationUserRole;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 
@@ -29,13 +32,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<User> userOptional = userRepository.findByEmail(email);
         User user = userOptional.orElseThrow(()->new ApplicationException("User not found"));
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                user.getPassword(), user.getIsEnabled(),
-                true, true , true,
-                getAuthorities("USER"));
-    }
+        //TODO: Testing User roles
+        //String role = ApplicationUserRole.ATTENDANT.name();
+        Set<SimpleGrantedAuthority> authorities = ApplicationUserRole.ATTENDANT.getGrantedAuthorities();
+        if (user instanceof Owner){
+            //String role = ApplicationUserRole.OWNER.name();
+            authorities = ApplicationUserRole.OWNER.getGrantedAuthorities();
+        }
+        //TODO: Remove sout
+        System.out.println(authorities.toString());
 
-    private Collection<? extends GrantedAuthority> getAuthorities(String role){
-        return singletonList(new SimpleGrantedAuthority(role));
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+//                .roles(role)
+                .authorities(authorities)
+                .build();
+
+        return userDetails;
     }
 }

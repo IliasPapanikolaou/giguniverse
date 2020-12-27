@@ -1,9 +1,7 @@
 package com.unipi.giguniverse.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -12,9 +10,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Inheritance //Default value Single Table that includes ancestors
-@AllArgsConstructor //Lombok, Generates Constructor
-@NoArgsConstructor
 @Data //Lombok, Generates Setters - Getters
+@SuperBuilder //Builder that supports super
+@NoArgsConstructor
 public class User {
 
     @Id

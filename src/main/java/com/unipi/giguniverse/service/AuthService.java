@@ -1,16 +1,11 @@
 package com.unipi.giguniverse.service;
 
-import com.unipi.giguniverse.dto.AuthenticationResponse;
-import com.unipi.giguniverse.dto.LoginRequest;
-import com.unipi.giguniverse.dto.RefreshTokenRequest;
-import com.unipi.giguniverse.dto.RegisterOwnerRequest;
+import com.unipi.giguniverse.dto.*;
 import com.unipi.giguniverse.exceptions.ApplicationException;
-import com.unipi.giguniverse.model.NotificationEmail;
-import com.unipi.giguniverse.model.Owner;
-import com.unipi.giguniverse.model.User;
-import com.unipi.giguniverse.model.VerificationToken;
+import com.unipi.giguniverse.model.*;
 import com.unipi.giguniverse.repository.UserRepository;
 import com.unipi.giguniverse.repository.VerificationTokenRepository;
+import com.unipi.giguniverse.security.ApplicationUserRole;
 import com.unipi.giguniverse.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,12 +34,15 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
 
     public void ownerSignup(RegisterOwnerRequest registerOwnerRequest){
-        User owner = new Owner();
-        owner.setName(registerOwnerRequest.getName());
-        owner.setEmail(registerOwnerRequest.getEmail());
-        owner.setPassword(passwordEncoder.encode(registerOwnerRequest.getPassword()));
-        owner.setCreated(Instant.now());
-        owner.setIsEnabled(false);
+
+        User owner = Owner.builder()
+                .name(registerOwnerRequest.getName())
+                .email(registerOwnerRequest.getEmail())
+                .password(passwordEncoder.encode(registerOwnerRequest.getPassword()))
+                .companyName(registerOwnerRequest.getCompanyName())
+                .created(Instant.now())
+                .isEnabled(false)
+                .build();
 
         //Check DB for duplicate account by email
         if(!userRepository.existsUserByEmail(registerOwnerRequest.getEmail())){
@@ -53,8 +51,32 @@ public class AuthService {
 
             String token = generateVerificationToken(owner);
             mailService.sendMail(new NotificationEmail("Please Activate your Account",
-                    owner.getEmail(), "Please click on the link below to activate" +
-                    "your account: http://localhost:8080/api/auth/accountVerification/" +token));
+                    owner.getEmail(), "Please click on the link below to activate " +
+                    "your account: http://localhost:8080/api/auth/account-verification/" +token));
+        }
+        else {
+            throw new ApplicationException("User already exists");
+        }
+    }
+
+    public void attendantSignup(RegisterAttendantRequest registerAttendantRequest){
+
+        User attendant = new Attendant();
+        attendant.setName(registerAttendantRequest.getName());
+        attendant.setEmail(registerAttendantRequest.getEmail());
+        attendant.setPassword(passwordEncoder.encode(registerAttendantRequest.getPassword()));
+        attendant.setCreated(Instant.now());
+        attendant.setIsEnabled(false);
+
+        //Check DB for duplicate account by email
+        if(!userRepository.existsUserByEmail(registerAttendantRequest.getEmail())){
+
+            userRepository.save(attendant); // Save User to DB
+
+            String token = generateVerificationToken(attendant);
+            mailService.sendMail(new NotificationEmail("Please Activate your Account",
+                    attendant.getEmail(), "Please click on the link below to activate" +
+                    "your account: http://localhost:8080/api/auth/account-verification/" +token));
         }
         else {
             throw new ApplicationException("User already exists");

@@ -39,6 +39,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		<!--Roles/Permissions-->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>28.1-jre</version>
+		</dependency>
+		<!--End Roles/Permissions-->
 		<!--Start JWT dependencies-->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

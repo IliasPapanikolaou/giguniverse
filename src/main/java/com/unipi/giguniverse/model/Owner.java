@@ -1,8 +1,7 @@
 package com.unipi.giguniverse.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -12,8 +11,9 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Data
-@AllArgsConstructor
+@SuperBuilder ///Builder that supports super from parent class
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true) //Builder that supports super from parent class
 public class Owner extends User{
 
     private String companyName;

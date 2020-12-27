@@ -1,9 +1,6 @@
 package com.unipi.giguniverse.controller;
 
-import com.unipi.giguniverse.dto.AuthenticationResponse;
-import com.unipi.giguniverse.dto.LoginRequest;
-import com.unipi.giguniverse.dto.RefreshTokenRequest;
-import com.unipi.giguniverse.dto.RegisterOwnerRequest;
+import com.unipi.giguniverse.dto.*;
 import com.unipi.giguniverse.service.AuthService;
 import com.unipi.giguniverse.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
@@ -21,13 +18,19 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> ownerSignup(@RequestBody RegisterOwnerRequest registerOwnerRequest){
+    @PostMapping("/signup-owner")
+    public ResponseEntity<String> signupOwner(@Valid @RequestBody RegisterOwnerRequest registerOwnerRequest){
         authService.ownerSignup(registerOwnerRequest);
         return new ResponseEntity<>("Owner Registration Successful", HttpStatus.OK);
     }
 
-    @GetMapping("accountVerification/{token}")
+    @PostMapping("/signup-attendant")
+    public ResponseEntity<String> signupAttendant(@Valid @RequestBody RegisterAttendantRequest registerAttendantRequest){
+        authService.attendantSignup(registerAttendantRequest);
+        return new ResponseEntity<>("Attendant Registration Successful", HttpStatus.OK);
+    }
+
+    @GetMapping("account-verification/{token}")
     public ResponseEntity<String> verifyAccount(@PathVariable String token){
         authService.verifyAccount(token);
         return new ResponseEntity<>("Account activated", HttpStatus.OK);
