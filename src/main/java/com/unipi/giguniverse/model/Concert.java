@@ -1,5 +1,10 @@
 package com.unipi.giguniverse.model;
 
+import com.unipi.giguniverse.service.VenueService;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -8,7 +13,11 @@ import java.util.Date;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Builder
 public class Concert {
 
     @Id
