@@ -1,6 +1,5 @@
 package com.unipi.giguniverse.model;
 
-import com.unipi.giguniverse.service.VenueService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
