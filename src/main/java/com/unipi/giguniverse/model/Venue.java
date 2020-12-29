@@ -19,15 +19,11 @@ public class Venue {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private int venueId;
-    @NonNull
     private String venueName;
     @OneToOne(fetch = LAZY)
     private Owner owner;
-    @NonNull
     private String address;
-    @NonNull
     private String city;
-    @NonNull
     private String phone;
     private int capacity;
     @OneToMany(fetch = LAZY)

@@ -5,7 +5,6 @@ import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.*;
 import com.unipi.giguniverse.repository.UserRepository;
 import com.unipi.giguniverse.repository.VerificationTokenRepository;
-import com.unipi.giguniverse.security.ApplicationUserRole;
 import com.unipi.giguniverse.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

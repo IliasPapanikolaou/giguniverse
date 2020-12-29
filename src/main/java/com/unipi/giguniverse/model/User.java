@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -18,11 +20,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     protected int userId;
-    @NonNull
+    @NotBlank(message="Name is required")
     protected String name;
-    @NonNull
+    @NotBlank(message="Email is required")
+    @Email
     protected String email;
-    @NonNull
+    @NotBlank(message="Password is required")
     protected String password;
     protected Instant created;
     protected Boolean isEnabled = false;
