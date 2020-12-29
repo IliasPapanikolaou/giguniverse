@@ -17,5 +17,8 @@ public class ConcertDto {
 
     private String concertName;
     private String description;
+    private Integer venueId;
+    private Venue venue;
     private Date date;
+    //TODO add reservation
 }

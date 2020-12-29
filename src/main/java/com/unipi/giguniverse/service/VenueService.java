@@ -47,6 +47,7 @@ public class VenueService {
 
     private VenueDto mapToDto(Venue venue){
         return VenueDto.builder()
+                .venueId(venue.getVenueId())
                 .venueName(venue.getVenueName())
                 .address(venue.getAddress())
                 .city(venue.getCity())

@@ -1,8 +1,10 @@
 package com.unipi.giguniverse.exceptions;
 
-public class ApplicationException extends RuntimeException{
+public class ApplicationException extends RuntimeException {
 
-   public ApplicationException(String exMessage, Exception exception){
+    //RestExceptionHandler restExceptionHandler;
+
+   public ApplicationException(String exMessage, Exception exception) {
        super(exMessage, exception);
    }
 
