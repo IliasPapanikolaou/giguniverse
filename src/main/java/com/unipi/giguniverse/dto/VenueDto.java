@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VenueDto {
 
+    private Integer venueId;
     private String venueName;
     private String address;
     private String city;

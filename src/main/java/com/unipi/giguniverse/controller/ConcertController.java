@@ -1,7 +1,6 @@
 package com.unipi.giguniverse.controller;
 
 import com.unipi.giguniverse.dto.ConcertDto;
-import com.unipi.giguniverse.dto.VenueDto;
 import com.unipi.giguniverse.model.Venue;
 import com.unipi.giguniverse.service.ConcertService;
 import lombok.AllArgsConstructor;
@@ -23,15 +22,15 @@ public class ConcertController {
 
     @PostMapping
     public ResponseEntity<ConcertDto> addConcert(@RequestBody ConcertDto concertDto){
-        return ResponseEntity.
-                status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(concertService.addConcert(concertDto));
     }
 
     @GetMapping
     public ResponseEntity<List<ConcertDto>> getAllConcerts(){
-        return ResponseEntity.
-                status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(concertService.getAllConcerts());
     }
 
@@ -44,15 +43,15 @@ public class ConcertController {
 
     @GetMapping("/date/{date}")
     public ResponseEntity<List<ConcertDto>> getConcertByDate(@PathVariable Date date){
-        return ResponseEntity.
-                status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(concertService.getConcertByDate(date));
     }
 
     @GetMapping("/venue/{venue}")
     public ResponseEntity<List<ConcertDto>> getConcertByDate(@PathVariable Venue venue){
-        return ResponseEntity.
-                status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(concertService.getConcertByVenue(venue));
     }
 

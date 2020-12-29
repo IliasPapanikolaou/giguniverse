@@ -5,8 +5,7 @@ import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.Concert;
 import com.unipi.giguniverse.model.Venue;
 import com.unipi.giguniverse.repository.ConcertRepository;
-
-
+import com.unipi.giguniverse.repository.VenueRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +27,13 @@ import static java.util.stream.Collectors.toList;
 public class ConcertService {
 
     private final ConcertRepository concertRepository;
+    private final VenueRepository venueRepository;
 
     private ConcertDto mapConcertToDto(Concert concert){
         return ConcertDto.builder()
                 .concertName(concert.getConcertName())
                 .description(concert.getDescription())
+                .venue(concert.getVenue())
                 .date(concert.getDate())
                 .build();
     }
@@ -41,6 +42,7 @@ public class ConcertService {
         return Concert.builder()
                 .concertName(concertDto.getConcertName())
                 .description(concertDto.getDescription())
+                .venue(venueRepository.getOne(concertDto.getVenueId()))
                 .date(concertDto.getDate())
                 .build();
     }
