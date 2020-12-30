@@ -29,7 +29,7 @@ public class VenueService {
         //Check by VenueName if venue already exists in DB
         if(!venueRepository.existsVenueByVenueName(venueDto.getVenueName())){
             //Add venue to DB
-            venueRepository.save(mapVenueDto(venueDto));
+            venueRepository.save(mapVenueDtoToVenue(venueDto));
             return venueDto;
         }
         else {
@@ -40,12 +40,12 @@ public class VenueService {
     public List<VenueDto> getAllVenues(){
         List<VenueDto> venues = venueRepository.findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(this::mapVenueToVenueDto)
                 .collect(toList());
         return venues;
     }
 
-    private VenueDto mapToDto(Venue venue){
+    private VenueDto mapVenueToVenueDto(Venue venue){
         return VenueDto.builder()
                 .venueId(venue.getVenueId())
                 .venueName(venue.getVenueName())
@@ -56,7 +56,7 @@ public class VenueService {
                 .build();
     }
 
-    private Venue mapVenueDto(VenueDto venueDto) {
+    private Venue mapVenueDtoToVenue(VenueDto venueDto) {
         return Venue.builder()
                 .venueName(venueDto.getVenueName())
                 .owner((Owner) authService.getCurrentUserDetails())
@@ -69,14 +69,14 @@ public class VenueService {
 
     public VenueDto getVenueById(Integer id){
         Optional<Venue> venue =  venueRepository.findById(id);
-        VenueDto venueDto = mapToDto(venue.orElseThrow(()->new ApplicationException("Venue not found")));
+        VenueDto venueDto = mapVenueToVenueDto(venue.orElseThrow(()->new ApplicationException("Venue not found")));
         return venueDto;
     }
 
     public List<VenueDto> getVenueByCity(String city){
         List<VenueDto> venues = venueRepository.findAllByCity(city)
                 .stream()
-                .map(this::mapToDto)
+                .map(this::mapVenueToVenueDto)
                 .collect(toList());
         return venues;
     }
