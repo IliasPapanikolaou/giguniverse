@@ -39,9 +39,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
+//                .cors() //TODO: Check CORS security policy
+//                .and()
                 .csrf().disable() //protection for session connects, safe to disable with REST
                 .authorizeRequests()
                 .antMatchers("/","index","/css/*","/js/*").permitAll()
+                .antMatchers("/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/concert/**").permitAll() //TODO: Allow all CRUD for now
                 .antMatchers("/api/reservation/**").permitAll() //TODO: Allow all CRUD for now

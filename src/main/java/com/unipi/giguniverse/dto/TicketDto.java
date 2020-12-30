@@ -18,7 +18,7 @@ public class TicketDto {
     private UUID ticketId;
     private String ticketHolder;
     private String ticketHolderEmail;
-//    private TicketType ticketType;
+    //    private TicketType ticketType;
     private double price;
     //TODO add Attendant
 //    private Attendant ticketBuyer;

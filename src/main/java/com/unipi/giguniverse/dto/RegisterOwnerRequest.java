@@ -4,18 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RegisterOwnerRequest {
-    @NotBlank
-    private String name;
-    @NotBlank
-    private String email;
-    @NotBlank
-    private String password;
-    @NotBlank
-    private String companyName;
 
+    @NotBlank(message="Name is required")
+    private String name;
+    @NotBlank(message="Email is required")
+    @Email
+    private String email;
+    @NotBlank(message="Password is required")
+    private String password;
+    private String companyName;
 }
