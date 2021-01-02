@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ApplicationExceptionResponse extends ResponseEntityExceptionHandler {
 
+    //TODO: Check BasicErrorController class
     @ExceptionHandler({ApplicationException.class})
     public ResponseEntity<String> handleExceptions(ApplicationException applicationException){
         return new ResponseEntity(applicationException.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);

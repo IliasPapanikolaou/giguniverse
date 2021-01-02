@@ -45,10 +45,10 @@ public class AuthController {
         return authService.login(loginRequest);
     }
 
-    @PostMapping("refresh/token")
-    public AuthenticationResponse refreshTokens(@RequestBody RefreshTokenRequest refreshTokenRequest){
-        return authService.refreshToken(refreshTokenRequest);
-    }
+//    @PostMapping("refresh/token")
+//    public AuthenticationResponse refreshTokens(@RequestBody RefreshTokenRequest refreshTokenRequest){
+//        return authService.refreshToken(refreshTokenRequest);
+//    }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody RefreshTokenRequest refreshTokenRequest){

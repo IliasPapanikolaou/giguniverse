@@ -13,8 +13,13 @@ import java.time.Instant;
 @NoArgsConstructor
 public class AuthenticationResponse {
 
-    private String authenticationToken;
-    private String refreshToken;
-    private Instant expiresAt;
+    private String firstname;
+    private String lastname;
     private String email;
+    private String role;
+    private int id;
+    private String jwt;
+    private Instant expiresAt;
+//    private String refreshToken;
+
 }

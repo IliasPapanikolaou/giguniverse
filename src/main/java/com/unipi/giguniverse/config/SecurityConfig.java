@@ -23,7 +23,7 @@ import static com.unipi.giguniverse.security.ApplicationUserPermission.VENUE_WRI
 import static com.unipi.giguniverse.security.ApplicationUserRole.ATTENDANT;
 
 @EnableWebSecurity
-@Configuration
+//@Configuration
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -39,8 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
-//                .cors() //TODO: Check CORS security policy
-//                .and()
+                .cors() //TODO: Check CORS security policy
+                .and()
                 .csrf().disable() //protection for session connects, safe to disable with REST
                 .authorizeRequests()
                 .antMatchers("/","index","/css/*","/js/*").permitAll()

@@ -35,7 +35,8 @@ public class AuthService {
     public void ownerSignup(RegisterOwnerRequest registerOwnerRequest){
 
         User owner = Owner.builder()
-                .name(registerOwnerRequest.getName())
+                .firstname(registerOwnerRequest.getFirstname())
+                .lastname(registerOwnerRequest.getLastname())
                 .email(registerOwnerRequest.getEmail())
                 .password(passwordEncoder.encode(registerOwnerRequest.getPassword()))
                 .companyName(registerOwnerRequest.getCompanyName())
@@ -60,12 +61,14 @@ public class AuthService {
 
     public void attendantSignup(RegisterAttendantRequest registerAttendantRequest){
 
-        User attendant = new Attendant();
-        attendant.setName(registerAttendantRequest.getName());
-        attendant.setEmail(registerAttendantRequest.getEmail());
-        attendant.setPassword(passwordEncoder.encode(registerAttendantRequest.getPassword()));
-        attendant.setCreated(Instant.now());
-        attendant.setIsEnabled(false);
+        User attendant = Attendant.builder()
+                .firstname(registerAttendantRequest.getFirstname())
+                .lastname(registerAttendantRequest.getLastname())
+                .email(registerAttendantRequest.getEmail())
+                .password(passwordEncoder.encode(registerAttendantRequest.getPassword()))
+                .created(Instant.now())
+                .isEnabled(false)
+                .build();
 
         //Check DB for duplicate account by email
         if(!userRepository.existsUserByEmail(registerAttendantRequest.getEmail())){
@@ -116,17 +119,24 @@ public class AuthService {
         verificationTokenRepository.deleteByToken(token);
     }
 
+    //Login Method
     public AuthenticationResponse login(LoginRequest loginRequest){
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                 loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
+        //Load current User
+        User user = getCurrentUserDetails();
         String token = jwtProvider.generateToken(authenticate);
         return AuthenticationResponse.builder()
-                .authenticationToken(token)
-                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .email(user.getEmail())
+                .role(user.getClass().getSimpleName())
+                .id(user.getUserId())
+                .jwt(token)
+//                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
-                .email(loginRequest.getEmail())
                 .build();
     }
 
@@ -142,15 +152,15 @@ public class AuthService {
         return userOptional.orElseThrow(()->new ApplicationException("User not found"));
     }
 
-    //Checks if user has UUID RefreshToken in DB, if yes, it refreshes the JWToken
-    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
-        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getEmail());
-        return AuthenticationResponse.builder()
-                .authenticationToken(token)
-                .refreshToken(refreshTokenRequest.getRefreshToken())
-                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
-                .email(refreshTokenRequest.getEmail())
-                .build();
-    }
+//    //Checks if user has UUID RefreshToken in DB, if yes, it refreshes the JWToken
+//    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+//        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+//        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getEmail());
+//        return AuthenticationResponse.builder()
+//                .jwt(token)
+//                .refreshToken(refreshTokenRequest.getRefreshToken())
+//                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+//                .email(refreshTokenRequest.getEmail())
+//                .build();
+//    }
 }
