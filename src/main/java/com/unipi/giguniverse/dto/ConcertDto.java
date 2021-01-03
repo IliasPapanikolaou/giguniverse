@@ -15,10 +15,11 @@ import java.util.Date;
 @NoArgsConstructor
 public class ConcertDto {
 
+    private Integer concertId;
     private String concertName;
     private String description;
     private Integer venueId;
-    private Venue venue;
+    private VenueDto venue;
     private Date date;
     //TODO add reservation
 }

@@ -55,4 +55,17 @@ public class ConcertController {
                 .body(concertService.getConcertByVenue(venue));
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<ConcertDto> updateConcert(@RequestBody ConcertDto concertDto){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(concertService.updateConcert(concertDto));
+    }
+
+    @DeleteMapping("/delete/{concertId}")
+    public ResponseEntity<String> deleteConcert(@PathVariable Integer concertId){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(concertService.deleteConcert(concertId));
+    }
 }

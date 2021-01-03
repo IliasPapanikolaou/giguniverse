@@ -45,7 +45,7 @@ public class VenueService {
         return venues;
     }
 
-    private VenueDto mapVenueToVenueDto(Venue venue){
+    VenueDto mapVenueToVenueDto(Venue venue){
         return VenueDto.builder()
                 .venueId(venue.getVenueId())
                 .venueName(venue.getVenueName())
@@ -79,6 +79,22 @@ public class VenueService {
                 .map(this::mapVenueToVenueDto)
                 .collect(toList());
         return venues;
+    }
+
+    public VenueDto updateVenue(VenueDto venueDto){
+        Venue existingVenue = venueRepository.getOne(venueDto.getVenueId());
+        existingVenue.setVenueName(venueDto.getVenueName());
+        existingVenue.setAddress(venueDto.getAddress());
+        existingVenue.setCity(venueDto.getCity());
+        existingVenue.setPhone(venueDto.getPhone());
+        existingVenue.setCapacity(venueDto.getCapacity());
+        venueRepository.save(existingVenue);
+        return mapVenueToVenueDto(existingVenue);
+    }
+
+    public String deleteVenue(Integer venueId){
+        venueRepository.deleteById(venueId);
+        return "Venue with id:" + venueId.toString() + " was deleted.";
     }
 
 }

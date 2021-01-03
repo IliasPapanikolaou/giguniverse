@@ -1,6 +1,7 @@
 package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.ConcertDto;
+import com.unipi.giguniverse.dto.VenueDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.Concert;
 import com.unipi.giguniverse.model.Venue;
@@ -27,12 +28,15 @@ public class ConcertService {
 
     private final ConcertRepository concertRepository;
     private final VenueRepository venueRepository;
+    private final VenueService venueService;
 
     private ConcertDto mapConcertToDto(Concert concert){
         return ConcertDto.builder()
+                .concertId(concert.getConcertId())
                 .concertName(concert.getConcertName())
                 .description(concert.getDescription())
-                .venue(concert.getVenue())
+                .venueId(concert.getVenue().getVenueId())
+                .venue(venueService.mapVenueToVenueDto(concert.getVenue()))
                 .date(concert.getDate())
                 .build();
     }
@@ -79,5 +83,18 @@ public class ConcertService {
         return Collections.emptyList();
     }
 
+    public ConcertDto updateConcert(ConcertDto concertDto){
+        Concert existingConcert = concertRepository.getOne(concertDto.getConcertId());
+        existingConcert.setConcertName(concertDto.getConcertName());
+        existingConcert.setDescription(concertDto.getDescription());
+        existingConcert.setVenue(venueRepository.getOne(concertDto.getVenueId()));
+        existingConcert.setDate(concertDto.getDate());
+        concertRepository.save(existingConcert);
+        return mapConcertToDto(existingConcert);
+    }
 
+    public String deleteConcert(Integer concertId) {
+        concertRepository.deleteById(concertId);
+        return "Concert with id:" + concertId.toString() + " was deleted.";
+    }
 }

@@ -22,15 +22,15 @@ public class VenueController {
 
     @PostMapping
     public ResponseEntity<VenueDto> addVenue(@RequestBody VenueDto venueDto){
-        return ResponseEntity.
-                status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(venueService.addVenue(venueDto));
     }
 
     @GetMapping
     public ResponseEntity<List<VenueDto>> getAllVenues(){
-        return ResponseEntity.
-                status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(venueService.getAllVenues());
     }
 
@@ -43,8 +43,22 @@ public class VenueController {
 
     @GetMapping("/city/{city}")
     public ResponseEntity<List<VenueDto>> getAllVenuesByCity(@PathVariable String city){
-        return ResponseEntity.
-                status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(venueService.getVenueByCity(city));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<VenueDto> updateVenue(@RequestBody VenueDto venueDto){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(venueService.updateVenue(venueDto));
+    }
+
+    @DeleteMapping("/delete/{venueId}")
+    public ResponseEntity<String> deleteVenue(@PathVariable Integer venueId){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(venueService.deleteVenue(venueId));
     }
 }

@@ -23,7 +23,7 @@ public class Concert {
     @GeneratedValue(strategy = IDENTITY)
     private int concertId;
     private String concertName;
-    @ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToOne(fetch= LAZY)
     private Venue venue;
     @Nullable
     @Lob
