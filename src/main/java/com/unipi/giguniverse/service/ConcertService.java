@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -64,7 +65,7 @@ public class ConcertService {
                 .collect(toList());
         return concerts;
     }
-    public List<ConcertDto> getConcertByDate(Date date){
+    public List<ConcertDto> getConcertByDate(LocalDate date){
         List<ConcertDto> concerts = concertRepository.findByDate(date)
                 .stream()
                 .map(this::mapConcertToDto)
@@ -78,9 +79,14 @@ public class ConcertService {
                 .collect(toList());
         return concerts;
     }
-    public List<ConcertDto> getConcertByMonth(Integer month){
-        //TODO use sql "between" or create attribute month in Concert class
-        return Collections.emptyList();
+    public List<ConcertDto> getConcertByMonth(LocalDate date){
+        LocalDate start = date.withDayOfMonth(1);
+        LocalDate end = date.plusMonths(1).withDayOfMonth(1).minusDays(1);
+        List<ConcertDto> concerts = concertRepository.findByDateGreaterThanAndDateLessThan(start,end)
+                .stream()
+                .map(this::mapConcertToDto)
+                .collect(toList());
+        return concerts;
     }
 
     public ConcertDto updateConcert(ConcertDto concertDto){

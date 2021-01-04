@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -20,6 +21,6 @@ public class ConcertDto {
     private String description;
     private Integer venueId;
     private VenueDto venue;
-    private Date date;
+    private LocalDate date;
     //TODO add reservation
 }

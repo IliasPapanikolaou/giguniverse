@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -35,7 +36,7 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TicketDto> getTicketById(@PathVariable Integer id){
+    public ResponseEntity<TicketDto> getTicketById(@PathVariable String id){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ticketService.getTicketById(id));
@@ -48,6 +49,19 @@ public class TicketController {
                 .body(ticketService.getTicketsByTicketHolderEmail(ticketHolderEmail));
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<TicketDto> updateTicket(@RequestBody TicketDto ticketDto){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ticketService.updateTicket(ticketDto));
+    }
+
+    @DeleteMapping("/delete/{ticketId}")
+    public ResponseEntity<String> deleteTicket(@PathVariable String ticketId){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ticketService.deleteTicket(ticketId));
+    }
   /*  @GetMapping("/attendants/{attendant}")
     public ResponseEntity<List<TicketDto>> getTicketByAttendant(@PathVariable Attendant attendant){
         return ResponseEntity

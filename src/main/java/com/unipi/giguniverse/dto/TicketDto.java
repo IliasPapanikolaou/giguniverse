@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TicketDto {
 
-    private UUID ticketId;
+    private String ticketId;
     private String ticketHolder;
     private String ticketHolderEmail;
     //    private TicketType ticketType;

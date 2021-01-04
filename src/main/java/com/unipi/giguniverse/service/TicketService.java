@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -49,7 +50,7 @@ public class TicketService {
         return ticketDto;
     }
 
-    public TicketDto getTicketById(Integer id){
+    public TicketDto getTicketById(String id){
         Optional<Ticket> ticket = ticketRepository.findById(id);
         TicketDto ticketDto=mapTicketToDto(ticket.orElseThrow(()->new ApplicationException("Ticket not found")));
         return ticketDto;
@@ -69,6 +70,21 @@ public class TicketService {
                 .map(this::mapTicketToDto)
                 .collect(toList());
         return tickets;
+    }
+
+    public TicketDto updateTicket(TicketDto ticketDto){
+        Ticket existingTicket = ticketRepository.getOne(ticketDto.getTicketId());
+        existingTicket.setTicketHolder(ticketDto.getTicketHolder());
+        existingTicket.setTicketHolderEmail(ticketDto.getTicketHolderEmail());
+        existingTicket.setPrice(ticketDto.getPrice());
+        existingTicket.setPhone(ticketDto.getPhone());
+        ticketRepository.save(existingTicket);
+        return mapTicketToDto(existingTicket);
+    }
+
+    public String deleteTicket(String ticketId) {
+        ticketRepository.deleteById(ticketId);
+        return "Ticket with id:" + ticketId.toString() + " was deleted.";
     }
 
 /*    public List<TicketDto> getTicketsByAttendant(Attendant ticketBuyer){

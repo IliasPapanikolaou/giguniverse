@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 import static javax.persistence.FetchType.LAZY;
@@ -28,7 +29,7 @@ public class Concert {
     @Nullable
     @Lob
     private String description;
-    private Date date;
+    private LocalDate date;
     @Nullable
     @OneToOne(fetch = LAZY)
     private Reservation reservation;

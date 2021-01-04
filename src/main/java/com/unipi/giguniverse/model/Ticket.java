@@ -5,11 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.UUID;
 
 import static javax.persistence.FetchType.LAZY;
@@ -24,7 +22,7 @@ public class Ticket {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID ticketId;
+    private String ticketId;
     private String ticketHolder;
     private String ticketHolderEmail;
     @OneToOne(fetch = LAZY)

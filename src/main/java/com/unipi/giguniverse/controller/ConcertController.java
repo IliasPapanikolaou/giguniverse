@@ -5,10 +5,12 @@ import com.unipi.giguniverse.model.Venue;
 import com.unipi.giguniverse.service.ConcertService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -42,14 +44,22 @@ public class ConcertController {
     }
 
     @GetMapping("/date/{date}")
-    public ResponseEntity<List<ConcertDto>> getConcertByDate(@PathVariable Date date){
+    public ResponseEntity<List<ConcertDto>> getConcertByDate(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd")LocalDate date){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(concertService.getConcertByDate(date));
     }
 
+    @GetMapping("/month/{date}")
+    public ResponseEntity<List<ConcertDto>> getConcertByMonth(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date){
+        System.out.println(date);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(concertService.getConcertByMonth(date));
+    }
+
     @GetMapping("/venue/{venue}")
-    public ResponseEntity<List<ConcertDto>> getConcertByDate(@PathVariable Venue venue){
+    public ResponseEntity<List<ConcertDto>> getConcertByVenue(@PathVariable Venue venue){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(concertService.getConcertByVenue(venue));
