@@ -3,10 +3,14 @@ package com.unipi.giguniverse.service;
 import com.unipi.giguniverse.dto.VenueDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.Owner;
+import com.unipi.giguniverse.model.User;
 import com.unipi.giguniverse.model.Venue;
+import com.unipi.giguniverse.repository.UserRepository;
 import com.unipi.giguniverse.repository.VenueRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,6 +26,7 @@ import static java.util.stream.Collectors.toList;
 public class VenueService {
 
     private final VenueRepository venueRepository;
+    private final UserRepository userRepository;
     private final AuthService authService;
 
 
@@ -71,6 +76,18 @@ public class VenueService {
         Optional<Venue> venue =  venueRepository.findById(id);
         VenueDto venueDto = mapVenueToVenueDto(venue.orElseThrow(()->new ApplicationException("Venue not found")));
         return venueDto;
+    }
+
+    public List<VenueDto> getVenuesByLoggedInOwner(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        Optional<User> owner =  userRepository.findByEmail(principal.getUsername());
+        List<VenueDto> venues = venueRepository.findByOwnerUserId(owner.get().getUserId())
+                .stream()
+                .map(this::mapVenueToVenueDto)
+                .collect(toList());
+        return venues;
     }
 
     public List<VenueDto> getVenueByCity(String city){

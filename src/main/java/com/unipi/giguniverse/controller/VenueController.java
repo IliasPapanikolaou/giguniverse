@@ -27,11 +27,18 @@ public class VenueController {
                 .body(venueService.addVenue(venueDto));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<VenueDto>> getAllVenues(){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(venueService.getAllVenues());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<VenueDto>> getVenuesByLoggedInOwner(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(venueService.getVenuesByLoggedInOwner());
     }
 
     @GetMapping("/{id}")
