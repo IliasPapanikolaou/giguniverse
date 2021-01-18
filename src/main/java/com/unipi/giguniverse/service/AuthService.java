@@ -5,6 +5,7 @@ import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.*;
 import com.unipi.giguniverse.repository.UserRepository;
 import com.unipi.giguniverse.repository.VerificationTokenRepository;
+import com.unipi.giguniverse.security.GoogleUserVerification;
 import com.unipi.giguniverse.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +31,8 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
     private final JwtProvider jwtProvider;
-    private final RefreshTokenService refreshTokenService;
+    //private final RefreshTokenService refreshTokenService;
+    private final GoogleUserVerification googleUserVerification;
 
     public void ownerSignup(RegisterOwnerRequest registerOwnerRequest){
 
@@ -138,6 +140,13 @@ public class AuthService {
 //                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .build();
+    }
+
+    //Google Login Method
+    public AuthenticationResponse googleLogin(GoogleLoginRequest googleLoginRequest){
+        //System.out.println(googleLoginRequest.toString());
+        googleUserVerification.verifyGoogleIdToken(googleLoginRequest.getId_token());
+        return null; //TODO: Continue from here
     }
 
     //Get current logged in user details from DB
