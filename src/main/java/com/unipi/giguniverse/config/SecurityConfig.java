@@ -1,12 +1,10 @@
 package com.unipi.giguniverse.config;
 
-import com.unipi.giguniverse.security.ApplicationUserPermission;
 import com.unipi.giguniverse.security.ApplicationUserRole;
 import com.unipi.giguniverse.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;

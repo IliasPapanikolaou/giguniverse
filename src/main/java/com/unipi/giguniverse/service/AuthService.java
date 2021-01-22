@@ -142,11 +142,42 @@ public class AuthService {
                 .build();
     }
 
-    //Google Login Method
+    //Google Login
     public AuthenticationResponse googleLogin(GoogleLoginRequest googleLoginRequest){
-        //System.out.println(googleLoginRequest.toString());
-        googleUserVerification.verifyGoogleIdToken(googleLoginRequest.getId_token());
-        return null; //TODO: Continue from here
+
+        if(googleUserVerification.verifyGoogleIdToken(googleLoginRequest.getId_token())){
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User principal = (User) authentication.getPrincipal();
+            if(userRepository.existsUserByEmail(principal.getEmail())){
+                Optional<User> userOptional = userRepository.findByEmail(principal.getEmail());
+                User googleUser = userOptional.orElseThrow(()->new ApplicationException("User not found"));
+                String token = jwtProvider.generateTokenForGoogleSignIn(authentication);
+                return AuthenticationResponse.builder()
+                        .firstname(googleUser.getFirstname())
+                        .lastname(googleUser.getLastname())
+                        .email(googleUser.getEmail())
+                        .role(googleUser.getClass().getSimpleName())
+                        .id(googleUser.getUserId())
+                        .jwt(token)
+//                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                        .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                        .build();
+            }
+            else {
+                User attendant = Attendant.builder()
+                        .firstname(principal.getFirstname())
+                        .lastname(principal.getLastname())
+                        .email(principal.getEmail())
+                        .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                        .created(Instant.now())
+                        .isEnabled(true)
+                        .build();
+
+                userRepository.save(attendant);// Save User to DB
+                return googleLogin(googleLoginRequest);
+            }
+        }
+        else return null;
     }
 
     //Get current logged in user details from DB

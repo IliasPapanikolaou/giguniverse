@@ -40,9 +40,19 @@ public class JwtProvider {
     }
 
     public String generateToken(Authentication authentication) {
-        User principal = (User) authentication.getPrincipal();
+        org.springframework.security.core.userdetails.User principal = (User) authentication.getPrincipal();
         return Jwts.builder()
                 .setSubject(principal.getUsername())
+                .setIssuedAt(from(Instant.now()))
+                .signWith(getPrivateKey())
+                .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
+                .compact();
+    }
+
+    public String generateTokenForGoogleSignIn(Authentication authentication) {
+        com.unipi.giguniverse.model.User principal = (com.unipi.giguniverse.model.User) authentication.getPrincipal();
+        return Jwts.builder()
+                .setSubject(principal.getEmail())
                 .setIssuedAt(from(Instant.now()))
                 .signWith(getPrivateKey())
                 .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))

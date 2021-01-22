@@ -6,7 +6,12 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.unipi.giguniverse.exceptions.ApplicationException;
+import com.unipi.giguniverse.model.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import lombok.NoArgsConstructor;
 
@@ -20,8 +25,9 @@ public class GoogleUserVerification{
 
     @Value("${google.ClientId}")
     private String googleClientId;
+    //private User user;
 
-    public void verifyGoogleIdToken(String idTokenString){
+    public Boolean verifyGoogleIdToken(String idTokenString){
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 // Specify the CLIENT_ID of the app that accesses the backend:
@@ -35,18 +41,27 @@ public class GoogleUserVerification{
             if (idToken != null){
                 Payload payload = idToken.getPayload();
 
-                // Print user identifier
-                String userId = payload.getSubject();
-                // Get profile information from payload
-                String email = payload.getEmail();
-                boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-                String name = (String) payload.get("name");
-                String pictureUrl = (String) payload.get("picture");
-                String locale = (String) payload.get("locale");
-                String familyName = (String) payload.get("family_name");
-                String givenName = (String) payload.get("given_name");
+//                // Print user identifier
+//                String userId = payload.getSubject();
+//                // Get profile information from payload
+//                String email = payload.getEmail();
+//                boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+//                String name = (String) payload.get("name");
+//                String pictureUrl = (String) payload.get("picture");
+//                String locale = (String) payload.get("locale");
+//                String familyName = (String) payload.get("family_name");
+//                String givenName = (String) payload.get("given_name");
 
-                System.out.println("User ID: " + userId +" Email: " +email); //TODO:Remove sout
+                User user = User.builder()
+                        .email(payload.getEmail())
+                        .firstname(payload.get("given_name").toString())
+                        .lastname(payload.get("family_name").toString())
+                        .build();
+
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user,
+                        null, AuthorityUtils.createAuthorityList("ROLE_ATTENDANT"));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
             }
             else {
                 System.out.println("Invalid ID token."); //TODO:Remove sout
@@ -57,6 +72,7 @@ public class GoogleUserVerification{
             e.printStackTrace();
             throw new ApplicationException("Invalid ID token");
         }
+        return true;
     }
 
 }
