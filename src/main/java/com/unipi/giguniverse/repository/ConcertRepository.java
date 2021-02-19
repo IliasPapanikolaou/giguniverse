@@ -14,4 +14,6 @@ public interface ConcertRepository extends JpaRepository<Concert, Integer> {
     List<Concert> findByDate(LocalDate date);
     List<Concert> findByVenue(Venue venue);
     List<Concert> findByDateGreaterThanAndDateLessThan(LocalDate start, LocalDate end);
+
+    List<Concert>findByVenueOwnerUserId(int userId);
 }

@@ -36,6 +36,13 @@ public class ConcertController {
                 .body(concertService.getAllConcerts());
     }
 
+    @GetMapping("/owner")
+    public ResponseEntity<List<ConcertDto>> getAllConcertsByLoggedInOwner(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(concertService.getConcertByLoggedInOwner());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ConcertDto> getConcertById(@PathVariable Integer id){
         return ResponseEntity
