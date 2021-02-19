@@ -4,18 +4,22 @@ import com.unipi.giguniverse.dto.ConcertDto;
 import com.unipi.giguniverse.dto.VenueDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.Concert;
+import com.unipi.giguniverse.model.User;
+import com.unipi.giguniverse.model.Owner;
 import com.unipi.giguniverse.model.Venue;
-import com.unipi.giguniverse.repository.ConcertRepository;
 
+import com.unipi.giguniverse.repository.ConcertRepository;
+import com.unipi.giguniverse.repository.UserRepository;
 import com.unipi.giguniverse.repository.VenueRepository;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +34,7 @@ public class ConcertService {
     private final ConcertRepository concertRepository;
     private final VenueRepository venueRepository;
     private final VenueService venueService;
+    private final UserRepository userRepository;
 
     private ConcertDto mapConcertToDto(Concert concert){
         return ConcertDto.builder()
@@ -83,6 +88,18 @@ public class ConcertService {
         LocalDate start = date.withDayOfMonth(1);
         LocalDate end = date.plusMonths(1).withDayOfMonth(1).minusDays(1);
         List<ConcertDto> concerts = concertRepository.findByDateGreaterThanAndDateLessThan(start,end)
+                .stream()
+                .map(this::mapConcertToDto)
+                .collect(toList());
+        return concerts;
+    }
+
+    public List<ConcertDto> getConcertByLoggedInOwner(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        Optional<User> owner =  userRepository.findByEmail(principal.getUsername());
+        List<ConcertDto> concerts = concertRepository.findByVenueOwnerUserId(owner.get().getUserId())
                 .stream()
                 .map(this::mapConcertToDto)
                 .collect(toList());
