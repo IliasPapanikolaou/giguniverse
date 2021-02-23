@@ -11,12 +11,12 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConcertDto {
+public class ReservationDto {
 
+    private Integer reservationId;
     private Integer concertId;
-    private String concertName;
-    private String description;
-    private Integer venueId;
-    private VenueDto venue;
-    private LocalDate date;
+    private ConcertDto concert;
+    private LocalDate startingDate;
+    private LocalDate finalDate;
+    private Integer ticketNumber;
 }
