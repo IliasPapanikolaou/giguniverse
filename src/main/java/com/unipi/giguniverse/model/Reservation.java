@@ -1,14 +1,24 @@
 package com.unipi.giguniverse.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Builder
 public class Reservation {
 
     @Id
@@ -18,8 +28,9 @@ public class Reservation {
     private Concert concert;
     @OneToOne(fetch = LAZY)
     private Owner owner;
-    private Date startingDate;
-    private Date finalDate;
+    private LocalDate startingDate;
+    private LocalDate finalDate;
+    private int ticketNumber;
     @OneToMany(fetch = LAZY)
     private List<Ticket> tickets;
 }

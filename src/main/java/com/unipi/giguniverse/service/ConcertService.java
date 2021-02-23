@@ -36,7 +36,7 @@ public class ConcertService {
     private final VenueService venueService;
     private final UserRepository userRepository;
 
-    private ConcertDto mapConcertToDto(Concert concert){
+    ConcertDto mapConcertToDto(Concert concert){
         return ConcertDto.builder()
                 .concertId(concert.getConcertId())
                 .concertName(concert.getConcertName())
