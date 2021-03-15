@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Builder
@@ -19,6 +17,5 @@ public class ConcertDto {
     private String description;
     private Integer venueId;
     private VenueDto venue;
-    @DateTimeFormat(pattern="yyyy-MM-dd")
-    private LocalDate date;
+    private Date date;
 }
