@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,5 +24,6 @@ public class OwnerDto {
     private String email;
     private String companyName;
     private Instant created;
+    private MultipartFile image;
 
 }

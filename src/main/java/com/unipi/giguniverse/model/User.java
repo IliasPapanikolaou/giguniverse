@@ -31,5 +31,6 @@ public class User {
     protected String password;
     protected Instant created;
     protected Boolean isEnabled = false;
+    protected byte[] image;
 }
 

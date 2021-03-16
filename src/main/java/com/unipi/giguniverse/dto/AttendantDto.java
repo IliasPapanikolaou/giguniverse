@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 
@@ -18,5 +19,6 @@ public class AttendantDto {
     private String lastname;
     private String email;
     private Instant created;
+    private MultipartFile image;
 
 }
