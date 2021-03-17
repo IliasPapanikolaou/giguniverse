@@ -28,6 +28,7 @@ public class AttendantService {
                 .lastname(attendant.getLastname())
                 .email(attendant.getEmail())
                 .created(attendant.getCreated())
+                .image(attendant.getImage())
                 .build();
     }
 

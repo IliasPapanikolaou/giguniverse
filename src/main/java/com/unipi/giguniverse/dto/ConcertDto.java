@@ -19,4 +19,5 @@ public class ConcertDto {
     private Integer venueId;
     private VenueDto venue;
     private Date date;
+    private String image;
 }

@@ -44,6 +44,7 @@ public class ConcertService {
                 .venueId(concert.getVenue().getVenueId())
                 .venue(venueService.mapVenueToVenueDto(concert.getVenue()))
                 .date(concert.getDate())
+                .image(concert.getImage())
                 .build();
     }
     private Concert mapConcertDto(ConcertDto concertDto){
@@ -52,6 +53,7 @@ public class ConcertService {
                 .description(concertDto.getDescription())
                 .venue(venueRepository.getOne(concertDto.getVenueId()))
                 .date(concertDto.getDate())
+                .image(concertDto.getImage())
                 .build();
     }
     public ConcertDto addConcert(ConcertDto concertDto){
