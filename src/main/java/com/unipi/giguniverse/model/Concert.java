@@ -32,6 +32,5 @@ public class Concert {
     @Nullable
     @OneToOne(fetch = LAZY)
     private Reservation reservation;
-    private byte[] image;
 
 }
