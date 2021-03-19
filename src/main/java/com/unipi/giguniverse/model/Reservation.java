@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -28,8 +27,9 @@ public class Reservation {
     private Concert concert;
     @OneToOne(fetch = LAZY)
     private Owner owner;
-    private LocalDate startingDate;
-    private LocalDate finalDate;
+    private Date startingDate;
+    private Date finalDate;
+    private double ticketPrice;
     private int ticketNumber;
     @OneToMany(fetch = LAZY)
     private List<Ticket> tickets;

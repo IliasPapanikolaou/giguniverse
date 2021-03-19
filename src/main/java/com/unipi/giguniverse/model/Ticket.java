@@ -30,7 +30,7 @@ public class Ticket {
     private TicketType ticketType;
     private double price;
     @OneToOne (fetch =LAZY)
-    private Attendant ticketBuyer;
+    private User ticketBuyer;
     private String phone;
 }
 

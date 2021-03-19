@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Builder
@@ -16,7 +16,8 @@ public class ReservationDto {
     private Integer reservationId;
     private Integer concertId;
     private ConcertDto concert;
-    private LocalDate startingDate;
-    private LocalDate finalDate;
+    private Date startingDate;
+    private Date finalDate;
+    private Integer ticketPrice;
     private Integer ticketNumber;
 }
