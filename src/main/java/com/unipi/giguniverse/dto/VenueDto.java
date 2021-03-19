@@ -1,6 +1,5 @@
 package com.unipi.giguniverse.dto;
 
-import com.unipi.giguniverse.model.Owner;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

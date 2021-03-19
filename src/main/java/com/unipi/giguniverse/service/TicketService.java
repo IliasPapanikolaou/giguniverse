@@ -2,19 +2,20 @@ package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.TicketDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
+import com.unipi.giguniverse.model.Concert;
+import com.unipi.giguniverse.model.Reservation;
 import com.unipi.giguniverse.model.Ticket;
+import com.unipi.giguniverse.repository.ConcertRepository;
+import com.unipi.giguniverse.repository.ReservationRepository;
 import com.unipi.giguniverse.repository.TicketRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.pool.TypePool;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -25,12 +26,17 @@ import static java.util.stream.Collectors.toList;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final ReservationRepository reservationRepository;
+    private final ConcertRepository concertRepository;
+    private final AuthService authService;
 
     private TicketDto mapTicketToDto(Ticket ticket){
         return TicketDto.builder()
                 .ticketId(ticket.getTicketId())
                 .ticketHolder(ticket.getTicketHolder())
                 .ticketHolderEmail(ticket.getTicketHolderEmail())
+                .ticketBuyerId(authService.getCurrentUserDetails().getUserId())
+                .concertId(ticket.getReservation().getConcert().getConcertId())
                 .price(ticket.getPrice())
                 .phone(ticket.getPhone())
                 .build();
@@ -46,7 +52,17 @@ public class TicketService {
     }
 
     public TicketDto addTicket(TicketDto ticketDto){
-        ticketRepository.save(mapTicketDto(ticketDto));
+        Concert concert = concertRepository.getOne(ticketDto.getConcertId());
+        int reservationId = concert.getReservation().getReservationId();
+        Reservation reservation = reservationRepository.getOne(reservationId);
+        Ticket ticket = mapTicketDto(ticketDto);
+        ticket.setReservation(reservation);
+        ticket.setTicketBuyer(authService.getCurrentUserDetails());
+        String ticketId = ticketRepository.save(ticket).getTicketId();
+        ticket.setTicketId(ticketId);
+        //Reduce available tickets by one
+        reduceAvailableTicketsByOne(reservation.getReservationId());
+        ticketDto = mapTicketToDto(ticket);
         return ticketDto;
     }
 
@@ -85,6 +101,12 @@ public class TicketService {
     public String deleteTicket(String ticketId) {
         ticketRepository.deleteById(ticketId);
         return "Ticket with id:" + ticketId.toString() + " was deleted.";
+    }
+
+    public Integer reduceAvailableTicketsByOne(Integer reservationId){
+        Reservation reservation = reservationRepository.getOne(reservationId);
+        reservation.setTicketNumber(reservation.getTicketNumber()-1);
+        return reservation.getTicketNumber();
     }
 
 /*    public List<TicketDto> getTicketsByAttendant(Attendant ticketBuyer){

@@ -25,7 +25,8 @@ public class ConcertController {
     public ResponseEntity<ConcertDto> addConcert(@RequestBody ConcertDto concertDto){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(concertService.addConcert(concertDto));
+                .body(concertService.addConcertAndReservation(concertDto));
+                //.body(concertService.addConcert(concertDto));
     }
 
     @GetMapping

@@ -32,5 +32,7 @@ public class Concert {
     @Nullable
     @OneToOne(fetch = LAZY)
     private Reservation reservation;
+    @Lob
+    private String image;
 
 }

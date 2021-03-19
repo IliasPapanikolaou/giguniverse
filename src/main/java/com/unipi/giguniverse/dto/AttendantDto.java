@@ -18,5 +18,6 @@ public class AttendantDto {
     private String lastname;
     private String email;
     private Instant created;
+    private String image;
 
 }

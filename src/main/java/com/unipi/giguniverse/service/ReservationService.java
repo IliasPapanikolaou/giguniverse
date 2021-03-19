@@ -1,6 +1,7 @@
 package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.ReservationDto;
+import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.Owner;
 import com.unipi.giguniverse.model.Reservation;
 import com.unipi.giguniverse.model.Concert;

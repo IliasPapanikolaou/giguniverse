@@ -1,14 +1,11 @@
 package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.ConcertDto;
-import com.unipi.giguniverse.dto.VenueDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
-import com.unipi.giguniverse.model.Concert;
-import com.unipi.giguniverse.model.User;
-import com.unipi.giguniverse.model.Owner;
-import com.unipi.giguniverse.model.Venue;
+import com.unipi.giguniverse.model.*;
 
 import com.unipi.giguniverse.repository.ConcertRepository;
+import com.unipi.giguniverse.repository.ReservationRepository;
 import com.unipi.giguniverse.repository.UserRepository;
 import com.unipi.giguniverse.repository.VenueRepository;
 
@@ -19,7 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +34,10 @@ public class ConcertService {
     private final VenueRepository venueRepository;
     private final VenueService venueService;
     private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
 
     ConcertDto mapConcertToDto(Concert concert){
+        Reservation reservation = reservationRepository.getOne(concert.getReservation().getReservationId());
         return ConcertDto.builder()
                 .concertId(concert.getConcertId())
                 .concertName(concert.getConcertName())
@@ -44,6 +45,9 @@ public class ConcertService {
                 .venueId(concert.getVenue().getVenueId())
                 .venue(venueService.mapVenueToVenueDto(concert.getVenue()))
                 .date(concert.getDate())
+                .ticketNumber(reservation.getTicketNumber())
+                .ticketPrice(reservation.getTicketPrice())
+                .image(concert.getImage())
                 .build();
     }
     private Concert mapConcertDto(ConcertDto concertDto){
@@ -52,6 +56,7 @@ public class ConcertService {
                 .description(concertDto.getDescription())
                 .venue(venueRepository.getOne(concertDto.getVenueId()))
                 .date(concertDto.getDate())
+                .image(concertDto.getImage())
                 .build();
     }
     public ConcertDto addConcert(ConcertDto concertDto){
@@ -120,4 +125,27 @@ public class ConcertService {
         concertRepository.deleteById(concertId);
         return "Concert with id:" + concertId.toString() + " was deleted.";
     }
+
+    //Assignment1
+    public ConcertDto addConcertAndReservation(ConcertDto concertDto){
+        //Add Concert
+        int concertId = concertRepository.save(mapConcertDto(concertDto)).getConcertId();
+        //Get Concert
+        Optional<Concert> optConcert = concertRepository.findById(concertId);
+        Concert concert = optConcert.orElseThrow(()->new ApplicationException("Concert not found"));
+        //Create Reservation
+        Reservation reservation = Reservation.builder()
+                .concert(concert)
+                .owner(concert.getVenue().getOwner())
+                .startingDate(Date.from(Instant.now()))
+                .finalDate(concert.getDate())
+                .ticketNumber(concert.getVenue().getCapacity())
+                .ticketPrice(concertDto.getTicketPrice())
+                .build();
+        //Add Reservation
+        reservationRepository.save(reservation);
+        concertRepository.getOne(concertId).setReservation(reservation);
+        return concertDto;
+    }
+
 }

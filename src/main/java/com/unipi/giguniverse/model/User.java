@@ -31,5 +31,7 @@ public class User {
     protected String password;
     protected Instant created;
     protected Boolean isEnabled = false;
+    @Lob
+    protected String image;
 }
 
