@@ -1,6 +1,5 @@
 package com.unipi.giguniverse.dto;
 
-import com.unipi.giguniverse.model.Attendant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -30,5 +28,5 @@ public class TicketDto {
     @NotBlank(message = "Ticket Buyer ID Required")
     private int ticketBuyerId;
     private String phone;
-    //TODO add reservation
+    private Date purchaseDate;
 }

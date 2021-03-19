@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,6 +41,7 @@ public class TicketService {
                 .ticketBuyerId(authService.getCurrentUserDetails().getUserId())
                 .concertId(ticket.getReservation().getConcert().getConcertId())
                 .price(ticket.getPrice())
+                .purchaseDate(ticket.getPurchaseDate())
                 .phone(ticket.getPhone())
                 .build();
     }
@@ -61,6 +64,7 @@ public class TicketService {
         ticket.setTicketBuyer(authService.getCurrentUserDetails());
         String ticketId = ticketRepository.save(ticket).getTicketId();
         ticket.setPrice(reservation.getTicketPrice());
+        ticket.setPurchaseDate(Date.from(Instant.now()));
         ticket.setTicketId(ticketId);
         //Reduce available tickets by one
         reduceAvailableTicketsByOne(reservation.getReservationId());
