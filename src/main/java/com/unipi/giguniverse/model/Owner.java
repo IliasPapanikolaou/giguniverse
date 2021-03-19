@@ -17,6 +17,7 @@ import static javax.persistence.FetchType.LAZY;
 public class Owner extends User{
 
     private String companyName;
+    private String vat;
     @OneToMany(fetch = LAZY)
     private List<Venue> venue;
     @OneToMany(fetch = LAZY)

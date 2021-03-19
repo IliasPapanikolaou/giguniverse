@@ -28,6 +28,7 @@ public class OwnerService {
                 .lastname(owner.getLastname())
                 .email(owner.getEmail())
                 .companyName(owner.getCompanyName())
+                .vat(owner.getVat())
                 .created(owner.getCreated())
                 .image(owner.getImage())
                 .build();

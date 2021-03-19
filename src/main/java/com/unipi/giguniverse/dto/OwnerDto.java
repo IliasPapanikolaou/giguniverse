@@ -18,6 +18,7 @@ public class OwnerDto {
     private String lastname;
     private String email;
     private String companyName;
+    private String vat;
     private Instant created;
     private String image;
 
