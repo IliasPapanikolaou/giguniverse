@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
@@ -53,12 +54,13 @@ public class TicketService {
 
     public TicketDto addTicket(TicketDto ticketDto){
         Concert concert = concertRepository.getOne(ticketDto.getConcertId());
-        int reservationId = concert.getReservation().getReservationId();
+        int reservationId = Objects.requireNonNull(concert.getReservation()).getReservationId();
         Reservation reservation = reservationRepository.getOne(reservationId);
         Ticket ticket = mapTicketDto(ticketDto);
         ticket.setReservation(reservation);
         ticket.setTicketBuyer(authService.getCurrentUserDetails());
         String ticketId = ticketRepository.save(ticket).getTicketId();
+        ticket.setPrice(reservation.getTicketPrice());
         ticket.setTicketId(ticketId);
         //Reduce available tickets by one
         reduceAvailableTicketsByOne(reservation.getReservationId());
