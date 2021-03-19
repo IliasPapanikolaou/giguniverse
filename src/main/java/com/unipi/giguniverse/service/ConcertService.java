@@ -1,6 +1,7 @@
 package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.ConcertDto;
+import com.unipi.giguniverse.dto.VenueDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.*;
 
@@ -20,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
@@ -37,7 +39,8 @@ public class ConcertService {
     private final ReservationRepository reservationRepository;
 
     ConcertDto mapConcertToDto(Concert concert){
-        Reservation reservation = reservationRepository.getOne(concert.getReservation().getReservationId());
+        Reservation reservation = reservationRepository
+                .getOne(Objects.requireNonNull(concert.getReservation()).getReservationId());
         return ConcertDto.builder()
                 .concertId(concert.getConcertId())
                 .concertName(concert.getConcertName())
@@ -145,6 +148,9 @@ public class ConcertService {
         //Add Reservation
         reservationRepository.save(reservation);
         concertRepository.getOne(concertId).setReservation(reservation);
+        concertDto.setConcertId(concertId);
+        concertDto.setTicketNumber(reservation.getTicketNumber());
+        concertDto.setVenue(venueService.mapVenueToVenueDto(concert.getVenue()));
         return concertDto;
     }
 

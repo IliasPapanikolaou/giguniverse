@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 import static javax.persistence.FetchType.LAZY;
@@ -29,6 +30,7 @@ public class Ticket {
     private Reservation reservation;
     private TicketType ticketType;
     private double price;
+    private Date purchaseDate;
     @OneToOne (fetch =LAZY)
     private User ticketBuyer;
     private String phone;

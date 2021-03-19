@@ -34,7 +34,8 @@ public class VenueService {
         //Check by VenueName if venue already exists in DB
         if(!venueRepository.existsVenueByVenueName(venueDto.getVenueName())){
             //Add venue to DB
-            venueRepository.save(mapVenueDtoToVenue(venueDto));
+            int venueId = venueRepository.save(mapVenueDtoToVenue(venueDto)).getVenueId();
+            venueDto.setVenueId(venueId);
             return venueDto;
         }
         else {

@@ -14,7 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
@@ -38,6 +41,7 @@ public class TicketService {
                 .ticketBuyerId(authService.getCurrentUserDetails().getUserId())
                 .concertId(ticket.getReservation().getConcert().getConcertId())
                 .price(ticket.getPrice())
+                .purchaseDate(ticket.getPurchaseDate())
                 .phone(ticket.getPhone())
                 .build();
     }
@@ -53,12 +57,14 @@ public class TicketService {
 
     public TicketDto addTicket(TicketDto ticketDto){
         Concert concert = concertRepository.getOne(ticketDto.getConcertId());
-        int reservationId = concert.getReservation().getReservationId();
+        int reservationId = Objects.requireNonNull(concert.getReservation()).getReservationId();
         Reservation reservation = reservationRepository.getOne(reservationId);
         Ticket ticket = mapTicketDto(ticketDto);
         ticket.setReservation(reservation);
         ticket.setTicketBuyer(authService.getCurrentUserDetails());
         String ticketId = ticketRepository.save(ticket).getTicketId();
+        ticket.setPrice(reservation.getTicketPrice());
+        ticket.setPurchaseDate(Date.from(Instant.now()));
         ticket.setTicketId(ticketId);
         //Reduce available tickets by one
         reduceAvailableTicketsByOne(reservation.getReservationId());
