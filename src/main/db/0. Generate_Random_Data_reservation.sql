@@ -24,3 +24,10 @@ select v.capacity-ticket_number from reservation
 inner join concert c on reservation.concert_concert_id = c.concert_id
 inner join venue v on c.venue_venue_id = v.venue_id
 where v.capacity-ticket_number<>0;
+
+
+-- Update owner from venue
+update reservation
+inner join concert c on reservation.concert_concert_id = c.concert_id
+inner join venue v on c.venue_venue_id = v.venue_id
+set reservation.owner_user_id=v.owner_user_id;
