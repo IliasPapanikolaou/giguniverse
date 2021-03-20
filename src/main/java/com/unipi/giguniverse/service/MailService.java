@@ -23,15 +23,16 @@ public class MailService {
     public void sendMail(NotificationEmail notificationEmail){
         MimeMessagePreparator messagePreparator = mimeMessage -> {
           MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-          messageHelper.setFrom("test@email.com");
+          messageHelper.setFrom("giguniverse@email.com");
           messageHelper.setTo(notificationEmail.getRecipient());
           messageHelper.setSubject(notificationEmail.getSubject());
-          messageHelper.setText(mailContentBuilder.build(notificationEmail.getBody()));
+//          messageHelper.setText(mailContentBuilder.build(notificationEmail.getBody()),true);
+          messageHelper.setText(mailContentBuilder.build(notificationEmail.getBody()),true);
         };
 
         try{
             mailSender.send(messagePreparator);
-            log.info("Activation email sent!");
+            log.info("Email sent!");
         }
         catch (MailException e){
             throw new ApplicationException("Exception occurred! Failed to send the" +

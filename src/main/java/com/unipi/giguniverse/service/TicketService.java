@@ -3,6 +3,7 @@ package com.unipi.giguniverse.service;
 import com.unipi.giguniverse.dto.TicketDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.Concert;
+import com.unipi.giguniverse.model.NotificationEmail;
 import com.unipi.giguniverse.model.Reservation;
 import com.unipi.giguniverse.model.Ticket;
 import com.unipi.giguniverse.repository.ConcertRepository;
@@ -32,6 +33,7 @@ public class TicketService {
     private final ReservationRepository reservationRepository;
     private final ConcertRepository concertRepository;
     private final AuthService authService;
+    private final MailService mailService;
 
     private TicketDto mapTicketToDto(Ticket ticket){
         return TicketDto.builder()
@@ -68,6 +70,8 @@ public class TicketService {
         ticket.setTicketId(ticketId);
         //Reduce available tickets by one
         reduceAvailableTicketsByOne(reservation.getReservationId());
+        //Send mail to ticket  holders
+        sendEmailToTicketHolders(ticket);
         ticketDto = mapTicketToDto(ticket);
         return ticketDto;
     }
@@ -109,10 +113,20 @@ public class TicketService {
         return "Ticket with id:" + ticketId.toString() + " was deleted.";
     }
 
-    public Integer reduceAvailableTicketsByOne(Integer reservationId){
+    private Integer reduceAvailableTicketsByOne(Integer reservationId){
         Reservation reservation = reservationRepository.getOne(reservationId);
         reservation.setTicketNumber(reservation.getTicketNumber()-1);
         return reservation.getTicketNumber();
+    }
+
+    private void sendEmailToTicketHolders(Ticket ticket){
+        mailService.sendMail(new NotificationEmail("Αγορά εισιτηρίου απο GigUniverse",
+                ticket.getTicketHolderEmail(),
+                "Αγοράσατε εισιτήριο απο εμάς... Καλά να πάθετε."
+                        +"<br />Αριθμός εισιτηρίου:" +ticket.getTicketId()
+                        +"<br />Όνομα δικαιούχου: " +ticket.getTicketHolder()
+                        +"<br />Ημε/νία αγοράς: " +ticket.getPurchaseDate()
+                        +"<br />Όνομα συγκροτήματος" +ticket.getReservation().getConcert().getConcertName()));
     }
 
 /*    public List<TicketDto> getTicketsByAttendant(Attendant ticketBuyer){
