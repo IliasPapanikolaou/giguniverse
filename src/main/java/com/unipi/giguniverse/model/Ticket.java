@@ -34,6 +34,7 @@ public class Ticket {
     @OneToOne (fetch =LAZY)
     private User ticketBuyer;
     private String phone;
+    private String qrcode;
 }
 
 enum TicketType{

@@ -29,4 +29,5 @@ public class TicketDto {
     private int ticketBuyerId;
     private String phone;
     private Date purchaseDate;
+    private String qrcode;
 }

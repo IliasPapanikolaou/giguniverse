@@ -2,6 +2,7 @@ package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.NotificationEmail;
+import com.unipi.giguniverse.model.Ticket;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
@@ -26,17 +27,36 @@ public class MailService {
           messageHelper.setFrom("giguniverse@email.com");
           messageHelper.setTo(notificationEmail.getRecipient());
           messageHelper.setSubject(notificationEmail.getSubject());
-//          messageHelper.setText(mailContentBuilder.build(notificationEmail.getBody()),true);
           messageHelper.setText(mailContentBuilder.build(notificationEmail.getBody()),true);
         };
 
         try{
             mailSender.send(messagePreparator);
-            log.info("Email sent!");
+            log.info("Activation Email sent!");
         }
         catch (MailException e){
             throw new ApplicationException("Exception occurred! Failed to send the" +
                     " email to recipient: "+notificationEmail.getRecipient());
+        }
+    }
+
+    @Async
+    public void sendTicketEMail(Ticket ticket){
+        MimeMessagePreparator messagePreparator = mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setFrom("giguniverse@email.com");
+            messageHelper.setTo(ticket.getTicketHolderEmail());
+            messageHelper.setSubject("Αγορά Εισιτηρίου απο GigUniverse");
+            messageHelper.setText(mailContentBuilder.buildTicketMail(ticket),true);
+        };
+
+        try{
+            mailSender.send(messagePreparator);
+            log.info("Ticket Email sent!");
+        }
+        catch (MailException e){
+            throw new ApplicationException("Exception occurred! Failed to send the" +
+                    " email to recipient: "+ticket.getTicketHolderEmail());
         }
     }
 }

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
@@ -34,6 +35,7 @@ public class TicketService {
     private final ConcertRepository concertRepository;
     private final AuthService authService;
     private final MailService mailService;
+    private final QRGeneratorService qrGeneratorService;
 
     private TicketDto mapTicketToDto(Ticket ticket){
         return TicketDto.builder()
@@ -45,6 +47,7 @@ public class TicketService {
                 .price(ticket.getPrice())
                 .purchaseDate(ticket.getPurchaseDate())
                 .phone(ticket.getPhone())
+                .qrcode(generateQRCodeImageToString(ticket))
                 .build();
     }
 
@@ -120,13 +123,25 @@ public class TicketService {
     }
 
     private void sendEmailToTicketHolders(Ticket ticket){
-        mailService.sendMail(new NotificationEmail("Αγορά εισιτηρίου απο GigUniverse",
-                ticket.getTicketHolderEmail(),
-                "Αγοράσατε εισιτήριο απο εμάς... Καλά να πάθετε."
-                        +"<br />Αριθμός εισιτηρίου:" +ticket.getTicketId()
-                        +"<br />Όνομα δικαιούχου: " +ticket.getTicketHolder()
-                        +"<br />Ημε/νία αγοράς: " +ticket.getPurchaseDate()
-                        +"<br />Όνομα συγκροτήματος" +ticket.getReservation().getConcert().getConcertName()));
+        generateQRCodeImage(ticket);
+        mailService.sendTicketEMail(ticket);
+    }
+
+    private void generateQRCodeImage(Ticket ticket){
+        String path = getClass().getResource("/templates/QRCode.png").getPath().substring(1);
+        String qrText = ticket.getTicketId() + "\n" +
+                ticket.getReservation().getConcert().getConcertName() + "\n" +
+                ticket.getTicketHolder() + "\n" +
+                ticket.getTicketHolderEmail();
+        qrGeneratorService.generateQRCodeImage(qrText,150, 150, path);
+    }
+
+    private String generateQRCodeImageToString(Ticket ticket){
+        String qrText = ticket.getTicketId() + "\n" +
+                ticket.getReservation().getConcert().getConcertName() + "\n" +
+                ticket.getTicketHolder() + "\n" +
+                ticket.getTicketHolderEmail();
+        return qrGeneratorService.getQRCodeImageAsBase64(qrText,150, 150);
     }
 
 /*    public List<TicketDto> getTicketsByAttendant(Attendant ticketBuyer){

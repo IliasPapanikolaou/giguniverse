@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:remove="all">GigUniverse Ticket Email Template</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <p>Αγορά εισιτηρίου απο GigUniverse</p>
+    <p th:text = "${name}">name</p>
+    <p th:text = "${email}">email</p>
+    <p th:text = "${concert}">concert</p>
+    <p th:text = "${price}">price</p>
+    <p th:text = "${purchaseDate}">purchaseDate</p>
+    <p th:text = "${phone}">phone</p>
+    <p th:text = "${concertDate}">concertDate</p>
+</body>
+</html>
