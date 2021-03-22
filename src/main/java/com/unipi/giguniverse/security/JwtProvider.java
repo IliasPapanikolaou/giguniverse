@@ -1,7 +1,9 @@
 package com.unipi.giguniverse.security;
 
 import com.unipi.giguniverse.exceptions.ApplicationException;
+import com.unipi.giguniverse.exceptions.ApplicationExceptionResponse;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -59,14 +61,14 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String generateTokenWithUserName(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(from(Instant.now()))
-                .signWith(getPrivateKey())
-                .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
-                .compact();
-    }
+//    public String generateTokenWithUserName(String username) {
+//        return Jwts.builder()
+//                .setSubject(username)
+//                .setIssuedAt(from(Instant.now()))
+//                .signWith(getPrivateKey())
+//                .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
+//                .compact();
+//    }
 
     private PrivateKey getPrivateKey() {
         try {
@@ -78,8 +80,13 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String jwt) {
-        parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
-        return true;
+        try{
+            parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
+            return true;
+        }
+        catch (ExpiredJwtException e){
+            throw new ApplicationException("Authentication Failed");
+        }
     }
 
     private PublicKey getPublicKey() {

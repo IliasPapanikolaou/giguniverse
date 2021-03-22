@@ -64,19 +64,22 @@ public class TicketService {
         Concert concert = concertRepository.getOne(ticketDto.getConcertId());
         int reservationId = Objects.requireNonNull(concert.getReservation()).getReservationId();
         Reservation reservation = reservationRepository.getOne(reservationId);
-        Ticket ticket = mapTicketDto(ticketDto);
-        ticket.setReservation(reservation);
-        ticket.setTicketBuyer(authService.getCurrentUserDetails());
-        String ticketId = ticketRepository.save(ticket).getTicketId();
-        ticket.setPrice(reservation.getTicketPrice());
-        ticket.setPurchaseDate(Date.from(Instant.now()));
-        ticket.setTicketId(ticketId);
-        //Reduce available tickets by one
-        reduceAvailableTicketsByOne(reservation.getReservationId());
-        //Send mail to ticket  holders
-        sendEmailToTicketHolders(ticket, generateQRCodeImageToString(ticket));
-        ticketDto = mapTicketToDto(ticket);
-        return ticketDto;
+
+        //Buy Ticket if there is any
+        if (checkAvailabilityAndBuyTicket(reservation.getReservationId())){
+            Ticket ticket = mapTicketDto(ticketDto);
+            ticket.setReservation(reservation);
+            ticket.setTicketBuyer(authService.getCurrentUserDetails());
+            String ticketId = ticketRepository.save(ticket).getTicketId();
+            ticket.setPrice(reservation.getTicketPrice());
+            ticket.setPurchaseDate(Date.from(Instant.now()));
+            ticket.setTicketId(ticketId);
+            //Send mail to ticket holder
+            sendEmailToTicketHolders(ticket, generateQRCodeImageToString(ticket));
+            ticketDto = mapTicketToDto(ticket);
+            return ticketDto;
+        }
+        else throw new ApplicationException("Tickets are sold out");
     }
 
     public TicketDto getTicketById(String id){
@@ -113,14 +116,17 @@ public class TicketService {
 
     public String deleteTicket(String ticketId) {
         ticketRepository.deleteById(ticketId);
-        return "Ticket with id:" + ticketId.toString() + " was deleted.";
+        return "Ticket with id:" + ticketId + " was deleted.";
     }
 
-    private Integer reduceAvailableTicketsByOne(Integer reservationId){
+    private boolean checkAvailabilityAndBuyTicket(Integer reservationId){
         Reservation reservation = reservationRepository.getOne(reservationId);
-        reservation.setTicketNumber(reservation.getTicketNumber()-1);
-        //TODO: zero tickets 'sold out' implementation
-        return reservation.getTicketNumber();
+        if (reservation.getTicketNumber() > 0){
+            //Reduce ticket count
+            reservation.setTicketNumber(reservation.getTicketNumber()-1);
+            return true;
+        }
+        else return false;
     }
 
     private void sendEmailToTicketHolders(Ticket ticket, String qrString){
@@ -128,14 +134,14 @@ public class TicketService {
         mailService.sendTicketEMail(ticket, qrString);
     }
 
-    private void generateQRCodeImage(Ticket ticket){
-        String path = getClass().getResource("/templates/QRCode.png").getPath().substring(1);
-        String qrText = ticket.getTicketId() + "\n" +
-                ticket.getReservation().getConcert().getConcertName() + "\n" +
-                ticket.getTicketHolder() + "\n" +
-                ticket.getTicketHolderEmail();
-        qrGeneratorService.generateQRCodeImage(qrText,150, 150, path);
-    }
+//    private void generateQRCodeImage(Ticket ticket){
+//        String path = getClass().getResource("/templates/QRCode.png").getPath().substring(1);
+//        String qrText = ticket.getTicketId() + "\n" +
+//                ticket.getReservation().getConcert().getConcertName() + "\n" +
+//                ticket.getTicketHolder() + "\n" +
+//                ticket.getTicketHolderEmail();
+//        qrGeneratorService.generateQRCodeImage(qrText,150, 150, path);
+//    }
 
     private String generateQRCodeImageToString(Ticket ticket){
         String qrText = ticket.getTicketId() + "\n" +
