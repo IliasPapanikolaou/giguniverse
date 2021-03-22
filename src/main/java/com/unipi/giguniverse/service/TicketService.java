@@ -74,7 +74,7 @@ public class TicketService {
         //Reduce available tickets by one
         reduceAvailableTicketsByOne(reservation.getReservationId());
         //Send mail to ticket  holders
-        sendEmailToTicketHolders(ticket);
+        sendEmailToTicketHolders(ticket, generateQRCodeImageToString(ticket));
         ticketDto = mapTicketToDto(ticket);
         return ticketDto;
     }
@@ -119,12 +119,13 @@ public class TicketService {
     private Integer reduceAvailableTicketsByOne(Integer reservationId){
         Reservation reservation = reservationRepository.getOne(reservationId);
         reservation.setTicketNumber(reservation.getTicketNumber()-1);
+        //TODO: zero tickets 'sold out' implementation
         return reservation.getTicketNumber();
     }
 
-    private void sendEmailToTicketHolders(Ticket ticket){
-        generateQRCodeImage(ticket);
-        mailService.sendTicketEMail(ticket);
+    private void sendEmailToTicketHolders(Ticket ticket, String qrString){
+        //generateQRCodeImage(ticket);
+        mailService.sendTicketEMail(ticket, qrString);
     }
 
     private void generateQRCodeImage(Ticket ticket){
@@ -140,7 +141,8 @@ public class TicketService {
         String qrText = ticket.getTicketId() + "\n" +
                 ticket.getReservation().getConcert().getConcertName() + "\n" +
                 ticket.getTicketHolder() + "\n" +
-                ticket.getTicketHolderEmail();
+                ticket.getTicketHolderEmail() + "\n" +
+                ticket.getPurchaseDate();
         return qrGeneratorService.getQRCodeImageAsBase64(qrText,150, 150);
     }
 

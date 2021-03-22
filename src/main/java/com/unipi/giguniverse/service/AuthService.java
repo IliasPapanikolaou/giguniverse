@@ -52,9 +52,8 @@ public class AuthService {
             userRepository.save(owner); // Save User to DB
 
             String token = generateVerificationToken(owner);
-            mailService.sendMail(new NotificationEmail("Please Activate your Account",
-                    owner.getEmail(), "Please click on the link below to activate " +
-                    "your account: http://localhost:8080/api/auth/account-verification/" +token));
+            mailService.sendActivationEMail(new NotificationEmail("Please Activate your Account",
+                    owner.getEmail(), "http://localhost:8080/api/auth/account-verification/" +token));
         }
         else {
             throw new ApplicationException("User already exists");
@@ -78,9 +77,8 @@ public class AuthService {
             userRepository.save(attendant); // Save User to DB
 
             String token = generateVerificationToken(attendant);
-            mailService.sendMail(new NotificationEmail("Please Activate your Account",
-                    attendant.getEmail(), "Please click on the link below to activate" +
-                    "your account: http://localhost:8080/api/auth/account-verification/" +token));
+            mailService.sendActivationEMail(new NotificationEmail("Please Activate your Account",
+                    attendant.getEmail(), "http://localhost:8080/api/auth/account-verification/" +token));
         }
         else {
             throw new ApplicationException("User already exists");
