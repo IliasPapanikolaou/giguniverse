@@ -5,12 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 import static javax.persistence.FetchType.LAZY;
 
