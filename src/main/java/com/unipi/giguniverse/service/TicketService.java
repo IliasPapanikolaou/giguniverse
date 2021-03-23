@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,27 +61,55 @@ public class TicketService {
                 .build();
     }
 
-    public TicketDto addTicket(TicketDto ticketDto){
-        Concert concert = concertRepository.getOne(ticketDto.getConcertId());
+//    public TicketDto addTicket(TicketDto ticketDto){
+//        Concert concert = concertRepository.getOne(ticketDto.getConcertId());
+//        int reservationId = Objects.requireNonNull(concert.getReservation()).getReservationId();
+//        Reservation reservation = reservationRepository.getOne(reservationId);
+//
+//        //Buy Ticket if there is any
+//        if (checkAvailabilityAndBuyTicket(reservation.getReservationId())){
+//            Ticket ticket = mapTicketDto(ticketDto);
+//            ticket.setReservation(reservation);
+//            ticket.setTicketBuyer(authService.getCurrentUserDetails());
+//            String ticketId = ticketRepository.save(ticket).getTicketId();
+//            ticket.setPrice(reservation.getTicketPrice());
+//            ticket.setPurchaseDate(Date.from(Instant.now()));
+//            ticket.setTicketId(ticketId);
+//            //Send mail to ticket holder
+//            sendEmailToTicketHolders(ticket, generateQRCodeImageToString(ticket));
+//            ticketDto = mapTicketToDto(ticket);
+//            return ticketDto;
+//        }
+//        else throw new ApplicationException("Tickets are sold out");
+//    }
+
+    public List<TicketDto> addTickets(List<TicketDto> ticketDtos){
+
+        Concert concert = concertRepository.getOne(ticketDtos.get(0).getConcertId());
         int reservationId = Objects.requireNonNull(concert.getReservation()).getReservationId();
         Reservation reservation = reservationRepository.getOne(reservationId);
 
-        //Buy Ticket if there is any
-        if (checkAvailabilityAndBuyTicket(reservation.getReservationId())){
-            Ticket ticket = mapTicketDto(ticketDto);
-            ticket.setReservation(reservation);
-            ticket.setTicketBuyer(authService.getCurrentUserDetails());
-            String ticketId = ticketRepository.save(ticket).getTicketId();
-            ticket.setPrice(reservation.getTicketPrice());
-            ticket.setPurchaseDate(Date.from(Instant.now()));
-            ticket.setTicketId(ticketId);
-            //Send mail to ticket holder
-            sendEmailToTicketHolders(ticket, generateQRCodeImageToString(ticket));
-            ticketDto = mapTicketToDto(ticket);
-            return ticketDto;
+        List<TicketDto> tickets = new ArrayList<>();
+        for(TicketDto ticketDto: ticketDtos){
+            //Buy Ticket if there is any
+            if (checkAvailabilityAndBuyTicket(reservation.getReservationId())){
+                Ticket ticket = mapTicketDto(ticketDto);
+                ticket.setReservation(reservation);
+                ticket.setTicketBuyer(authService.getCurrentUserDetails());
+                String ticketId = ticketRepository.save(ticket).getTicketId();
+                ticket.setPrice(reservation.getTicketPrice());
+                ticket.setPurchaseDate(Date.from(Instant.now()));
+                ticket.setTicketId(ticketId);
+                //Send mail to ticket holder
+                sendEmailToTicketHolders(ticket, generateQRCodeImageToString(ticket));
+                ticketDto = mapTicketToDto(ticket);
+                tickets.add(ticketDto);
+            }
+            else throw new ApplicationException("Tickets are sold out");
         }
-        else throw new ApplicationException("Tickets are sold out");
+        return tickets;
     }
+
 
     public TicketDto getTicketById(String id){
         Optional<Ticket> ticket = ticketRepository.findById(id);

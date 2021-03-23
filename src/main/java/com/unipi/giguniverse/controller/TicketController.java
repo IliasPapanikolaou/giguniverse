@@ -1,6 +1,7 @@
 package com.unipi.giguniverse.controller;
 
 import com.unipi.giguniverse.dto.TicketDto;
+import com.unipi.giguniverse.model.Ticket;
 import com.unipi.giguniverse.service.TicketService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +22,18 @@ public class TicketController {
 
     private final TicketService ticketService;
 
+//    @PostMapping
+//    public ResponseEntity<TicketDto> addTicket(@RequestBody TicketDto ticketDto){
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(ticketService.addTicket(ticketDto));
+//    }
+
     @PostMapping
-    public ResponseEntity<TicketDto> addTicket(@RequestBody TicketDto ticketDto){
+    public ResponseEntity<List<TicketDto>> addTickets(@RequestBody List<TicketDto> ticketDtos){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ticketService.addTicket(ticketDto));
+                .body(ticketService.addTickets(ticketDtos));
     }
 
     @GetMapping
