@@ -50,6 +50,20 @@ public class TicketController {
                 .body(ticketService.getTicketById(id));
     }
 
+    @GetMapping("/loggedin")
+    public ResponseEntity<List<TicketDto>> getTicketsByLoggedInUser(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ticketService.getTicketsByLoggedInUser());
+    }
+
+    @GetMapping("/concert/{id}")
+    public ResponseEntity<List<TicketDto>> getTicketsByConcertID(@PathVariable Integer id){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ticketService.getTicketsByConcertID(id));
+    }
+
     @GetMapping("/ticketHolderEmail/{ticketHolderEmail}")
     public ResponseEntity<List<TicketDto>> getTicketByEmail(@PathVariable String ticketHolderEmail){
         return ResponseEntity
