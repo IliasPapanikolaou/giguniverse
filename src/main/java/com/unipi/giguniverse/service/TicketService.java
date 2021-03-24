@@ -2,16 +2,16 @@ package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.TicketDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
-import com.unipi.giguniverse.model.Concert;
-import com.unipi.giguniverse.model.NotificationEmail;
-import com.unipi.giguniverse.model.Reservation;
-import com.unipi.giguniverse.model.Ticket;
+import com.unipi.giguniverse.model.*;
 import com.unipi.giguniverse.repository.ConcertRepository;
 import com.unipi.giguniverse.repository.ReservationRepository;
 import com.unipi.giguniverse.repository.TicketRepository;
 
+import com.unipi.giguniverse.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -33,6 +33,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final ReservationRepository reservationRepository;
     private final ConcertRepository concertRepository;
+    private final UserRepository userRepository;
     private final AuthService authService;
     private final MailService mailService;
     private final QRGeneratorService qrGeneratorService;
@@ -96,8 +97,27 @@ public class TicketService {
         return tickets;
     }
 
+    public List<TicketDto> getTicketsByConcertID(Integer concertId){
+        List<TicketDto> tickets = ticketRepository.findByReservationConcertConcertId(concertId)
+                .stream()
+                .map(this::mapTicketToDto)
+                .collect(toList());
+        return tickets;
+    }
+
     public List<TicketDto> getTicketsByTicketHolderEmail(String ticketHolderEmail){
         List<TicketDto> tickets = ticketRepository.findByTicketHolderEmail(ticketHolderEmail)
+                .stream()
+                .map(this::mapTicketToDto)
+                .collect(toList());
+        return tickets;
+    }
+    public List<TicketDto> getTicketsByLoggedInUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        Optional<User> user =  userRepository.findByEmail(principal.getUsername());
+        List<TicketDto> tickets = ticketRepository.findByTicketHolderEmail(user.get().getEmail())
                 .stream()
                 .map(this::mapTicketToDto)
                 .collect(toList());
