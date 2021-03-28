@@ -1,6 +1,5 @@
 package com.unipi.giguniverse.service;
 
-import com.unipi.giguniverse.dto.ConcertDto;
 import com.unipi.giguniverse.dto.TicketDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.*;
@@ -16,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -149,7 +147,8 @@ public class TicketService {
         org.springframework.security.core.userdetails.User principal =
                 (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
         Optional<User> user =  userRepository.findByEmail(principal.getUsername());
-        List<TicketDto> tickets = ticketRepository.findByTicketHolderEmail(user.get().getEmail())
+        //List<TicketDto> tickets = ticketRepository.findByTicketHolderEmail (user.get().getEmail())
+        List<TicketDto> tickets = ticketRepository.findByTicketBuyerUserId(user.get().getUserId())
                 .stream()
                 .map(this::mapTicketToDto)
                 .collect(toList());
