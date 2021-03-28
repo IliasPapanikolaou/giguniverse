@@ -22,4 +22,5 @@ public class RegisterOwnerRequest {
     @NotBlank(message="Password is required")
     private String password;
     private String companyName;
+    private String vat;
 }
