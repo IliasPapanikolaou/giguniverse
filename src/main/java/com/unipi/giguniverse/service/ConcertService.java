@@ -116,10 +116,15 @@ public class ConcertService {
 
     public ConcertDto updateConcert(ConcertDto concertDto){
         Concert existingConcert = concertRepository.getOne(concertDto.getConcertId());
+        Reservation reservation = reservationRepository
+                .getOne(Objects.requireNonNull(existingConcert.getReservation()).getReservationId());
         existingConcert.setConcertName(concertDto.getConcertName());
         existingConcert.setDescription(concertDto.getDescription());
         existingConcert.setVenue(venueRepository.getOne(concertDto.getVenueId()));
         existingConcert.setDate(concertDto.getDate());
+        existingConcert.setImage(concertDto.getImage());
+        reservation.setTicketPrice(concertDto.getTicketPrice());
+        reservation.setTicketNumber(concertDto.getTicketNumber());
         concertRepository.save(existingConcert);
         return mapConcertToDto(existingConcert);
     }
