@@ -42,6 +42,7 @@ public class AuthService {
                 .email(registerOwnerRequest.getEmail())
                 .password(passwordEncoder.encode(registerOwnerRequest.getPassword()))
                 .companyName(registerOwnerRequest.getCompanyName())
+                .vat(registerOwnerRequest.getVat())
                 .created(Instant.now())
                 .isEnabled(false)
                 .build();
