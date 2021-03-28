@@ -1,5 +1,6 @@
 package com.unipi.giguniverse.service;
 
+import com.unipi.giguniverse.dto.ConcertDto;
 import com.unipi.giguniverse.dto.TicketDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.*;
@@ -38,6 +39,7 @@ public class TicketService {
     private final AuthService authService;
     private final MailService mailService;
     private final QRGeneratorService qrGeneratorService;
+    private final ConcertService concertService;
 
     private TicketDto mapTicketToDto(Ticket ticket){
         return TicketDto.builder()
@@ -46,6 +48,7 @@ public class TicketService {
                 .ticketHolderEmail(ticket.getTicketHolderEmail())
                 .ticketBuyerId(authService.getCurrentUserDetails().getUserId())
                 .concertId(ticket.getReservation().getConcert().getConcertId())
+                .concertDto(concertService.mapConcertToDto(ticket.getReservation().getConcert()))
                 .price(ticket.getPrice())
                 .purchaseDate(ticket.getPurchaseDate())
                 .phone(ticket.getPhone())

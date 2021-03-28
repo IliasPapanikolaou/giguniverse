@@ -18,6 +18,7 @@ public class TicketDto {
     private String ticketId;
     @NotBlank(message = "Concert ID Required")
     private int concertId;
+    private ConcertDto concertDto;
     @NotBlank(message = "Ticket Holder Name Required")
     private String ticketHolder;
     @NotBlank(message = "Ticket Holder Email Required")
