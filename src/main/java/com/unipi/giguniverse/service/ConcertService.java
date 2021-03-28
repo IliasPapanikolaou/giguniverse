@@ -124,7 +124,6 @@ public class ConcertService {
         existingConcert.setDate(concertDto.getDate());
         existingConcert.setImage(concertDto.getImage());
         reservation.setTicketPrice(concertDto.getTicketPrice());
-        reservation.setTicketNumber(concertDto.getTicketNumber());
         concertRepository.save(existingConcert);
         return mapConcertToDto(existingConcert);
     }
