@@ -129,6 +129,8 @@ public class ConcertService {
     }
 
     public String deleteConcert(Integer concertId) {
+        Concert existingConcert = concertRepository.getOne(concertId);
+        reservationRepository.deleteById(existingConcert.getReservation().getReservationId());
         concertRepository.deleteById(concertId);
         return "Concert with id:" + concertId.toString() + " was deleted.";
     }
