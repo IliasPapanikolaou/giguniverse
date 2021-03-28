@@ -48,7 +48,7 @@ public class TicketService {
                 .ticketHolderEmail(ticket.getTicketHolderEmail())
                 .ticketBuyerId(authService.getCurrentUserDetails().getUserId())
                 .concertId(ticket.getReservation().getConcert().getConcertId())
-                .concertDto(concertService.mapConcertToDto(ticket.getReservation().getConcert()))
+                .concert(concertService.mapConcertToDto(ticket.getReservation().getConcert()))
                 .price(ticket.getPrice())
                 .purchaseDate(ticket.getPurchaseDate())
                 .phone(ticket.getPhone())
