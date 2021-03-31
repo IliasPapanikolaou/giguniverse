@@ -1,26 +1,28 @@
 package com.unipi.giguniverse.service;
 
-import com.unipi.giguniverse.model.Reservation;
 import com.unipi.giguniverse.model.Ticket;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
+import org.springframework.util.ResourceUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 
 @Service
-@AllArgsConstructor
 public class MailContentBuilder {
 
     private final TemplateEngine templateEngine;
-    private final String pngDataB64 = pngToBase64Converter("/templates/logo.png");
+    private final String pngDataB64;
+
+    MailContentBuilder(TemplateEngine templateEngine){
+        this.templateEngine = templateEngine;
+        this.pngDataB64 = pngToBase64Converter();
+    }
 
 //    String build(String message){
 //        Context context = new Context();
@@ -56,10 +58,6 @@ public class MailContentBuilder {
     }
 
     String buildActivationMail(String url){
-
-        //PNG to Base64 Converter
-        String pngDataB64 = pngToBase64Converter("/templates/logo.png");
-
         Context context = new Context();
         context.setVariable("url", url);
         context.setVariable("logo", pngDataB64);
@@ -82,11 +80,11 @@ public class MailContentBuilder {
         return templateEngine.process("rescheduleConcertTemplate", context);
     }
 
-    private String pngToBase64Converter(String pngPath){
+    private String pngToBase64Converter(){
         String pngDataB64 = null;
         try {
             BufferedImage bufferedImage = ImageIO
-                    .read(new File(getClass().getResource(pngPath).getFile()));
+                    .read(ResourceUtils.getFile("classpath:templates/logo.png"));
             ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
             ImageIO.write(bufferedImage, "PNG", pngOutputStream);
             byte[] pngData = pngOutputStream.toByteArray();
