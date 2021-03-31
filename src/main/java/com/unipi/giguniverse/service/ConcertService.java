@@ -1,14 +1,10 @@
 package com.unipi.giguniverse.service;
 
 import com.unipi.giguniverse.dto.ConcertDto;
-import com.unipi.giguniverse.dto.VenueDto;
 import com.unipi.giguniverse.exceptions.ApplicationException;
 import com.unipi.giguniverse.model.*;
 
-import com.unipi.giguniverse.repository.ConcertRepository;
-import com.unipi.giguniverse.repository.ReservationRepository;
-import com.unipi.giguniverse.repository.UserRepository;
-import com.unipi.giguniverse.repository.VenueRepository;
+import com.unipi.giguniverse.repository.*;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +33,9 @@ public class ConcertService {
     private final VenueService venueService;
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
+    private final TicketRepository ticketRepository;
+    private final MailService mailService;
+    private final QRGeneratorService qrGeneratorService;
 
     ConcertDto mapConcertToDto(Concert concert){
         Reservation reservation = reservationRepository
@@ -116,6 +115,10 @@ public class ConcertService {
 
     public ConcertDto updateConcert(ConcertDto concertDto){
         Concert existingConcert = concertRepository.getOne(concertDto.getConcertId());
+        //check for date change
+        boolean changedDate = false;
+        if(!concertDto.getDate().equals(existingConcert.getDate())) changedDate = true;
+        //update concert details
         Reservation reservation = reservationRepository
                 .getOne(Objects.requireNonNull(existingConcert.getReservation()).getReservationId());
         existingConcert.setConcertName(concertDto.getConcertName());
@@ -125,10 +128,15 @@ public class ConcertService {
         existingConcert.setImage(concertDto.getImage());
         reservation.setTicketPrice(concertDto.getTicketPrice());
         concertRepository.save(existingConcert);
+        //if concert date has changed then notify users
+        if(changedDate){
+            notifyUserForConcertChanges(existingConcert);
+        }
         return mapConcertToDto(existingConcert);
     }
 
     public String deleteConcert(Integer concertId) {
+        cancelConcertDeleteTicketsAndUserEmail(concertId);
         Concert existingConcert = concertRepository.getOne(concertId);
         reservationRepository.deleteById(existingConcert.getReservation().getReservationId());
         concertRepository.deleteById(concertId);
@@ -158,6 +166,29 @@ public class ConcertService {
         concertDto.setTicketNumber(reservation.getTicketNumber());
         concertDto.setVenue(venueService.mapVenueToVenueDto(concert.getVenue()));
         return concertDto;
+    }
+
+    private void cancelConcertDeleteTicketsAndUserEmail(int concertId){
+        Reservation reservation = reservationRepository.findByConcert_ConcertId(concertId)
+                .orElseThrow(()->new ApplicationException("Reservation not found"));
+
+        List<Ticket> tickets = ticketRepository.deleteByReservationReservationId(reservation.getReservationId());
+
+        for(Ticket ticket: tickets){
+            //Fixes the null connection between classes
+            ticket.getReservation().getConcert().getVenue().getVenueName();
+            //Send mail to ticket holders
+            mailService.cancelConcertNotificationEmail(ticket);
+        }
+    }
+
+    private void notifyUserForConcertChanges(Concert concert){
+        List<Ticket> tickets = ticketRepository
+                .findByReservationReservationId(concert.getReservation().getReservationId());
+        for(Ticket ticket : tickets){
+            String qrCode = qrGeneratorService.generateQRCodeImageToString(ticket);
+            mailService.rescheduleConcertNotificationEmail(ticket, qrCode);
+        }
     }
 
 }

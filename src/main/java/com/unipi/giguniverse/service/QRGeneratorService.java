@@ -5,6 +5,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.unipi.giguniverse.model.Ticket;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
@@ -42,5 +43,14 @@ public class QRGeneratorService {
             e.printStackTrace();
         }
         return pngDataB64;
+    }
+
+    public String generateQRCodeImageToString(Ticket ticket){
+        String qrText = ticket.getTicketId() + "\n" +
+                ticket.getReservation().getConcert().getConcertName() + "\n" +
+                ticket.getTicketHolder() + "\n" +
+                ticket.getTicketHolderEmail() + "\n" +
+                ticket.getPurchaseDate();
+        return getQRCodeImageAsBase64(qrText,150, 150);
     }
 }

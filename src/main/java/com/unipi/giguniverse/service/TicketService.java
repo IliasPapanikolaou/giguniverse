@@ -50,7 +50,7 @@ public class TicketService {
                 .price(ticket.getPrice())
                 .purchaseDate(ticket.getPurchaseDate())
                 .phone(ticket.getPhone())
-                .qrcode(generateQRCodeImageToString(ticket))
+                .qrcode(qrGeneratorService.generateQRCodeImageToString(ticket))
                 .build();
     }
 
@@ -92,23 +92,26 @@ public class TicketService {
         Reservation reservation = reservationRepository.getOne(reservationId);
 
         List<TicketDto> tickets = new ArrayList<>();
-        for(TicketDto ticketDto: ticketDtos){
-            //Buy Ticket if there is any
-            if (checkAvailabilityAndBuyTicket(reservation.getReservationId())){
-                Ticket ticket = mapTicketDto(ticketDto);
-                ticket.setReservation(reservation);
-                ticket.setTicketBuyer(authService.getCurrentUserDetails());
-                String ticketId = ticketRepository.save(ticket).getTicketId();
-                ticket.setPrice(reservation.getTicketPrice());
-                ticket.setPurchaseDate(Date.from(Instant.now()));
-                ticket.setTicketId(ticketId);
-                //Send mail to ticket holder
-                sendEmailToTicketHolders(ticket, generateQRCodeImageToString(ticket));
-                ticketDto = mapTicketToDto(ticket);
-                tickets.add(ticketDto);
+        if(ticketDtos.size() <= reservation.getTicketNumber()){
+            for(TicketDto ticketDto: ticketDtos){
+                //Buy Ticket if there is any
+                if (checkAvailabilityAndBuyTicket(reservation.getReservationId())){
+                    Ticket ticket = mapTicketDto(ticketDto);
+                    ticket.setReservation(reservation);
+                    ticket.setTicketBuyer(authService.getCurrentUserDetails());
+                    String ticketId = ticketRepository.save(ticket).getTicketId();
+                    ticket.setPrice(reservation.getTicketPrice());
+                    ticket.setPurchaseDate(Date.from(Instant.now()));
+                    ticket.setTicketId(ticketId);
+                    //Send mail to ticket holder
+                    sendEmailToTicketHolders(ticket, qrGeneratorService.generateQRCodeImageToString(ticket));
+                    ticketDto = mapTicketToDto(ticket);
+                    tickets.add(ticketDto);
+                }
+                else throw new ApplicationException("Tickets are sold out");
             }
-            else throw new ApplicationException("Tickets are sold out");
         }
+        else throw new ApplicationException("Not enough tickets available");
         return tickets;
     }
 
@@ -117,6 +120,21 @@ public class TicketService {
         Optional<Ticket> ticket = ticketRepository.findById(id);
         TicketDto ticketDto=mapTicketToDto(ticket.orElseThrow(()->new ApplicationException("Ticket not found")));
         return ticketDto;
+    }
+
+    public TicketDto validateTicket(String id){
+        Optional<Ticket> ticket = ticketRepository.findById(id);
+        return  TicketDto.builder()
+                .ticketId(ticket.get().getTicketId())
+                .ticketHolder(ticket.get().getTicketHolder())
+                .ticketHolderEmail(ticket.get().getTicketHolderEmail())
+                .concertId(ticket.get().getReservation().getConcert().getConcertId())
+                .concert(concertService.mapConcertToDto(ticket.get().getReservation().getConcert()))
+                .price(ticket.get().getPrice())
+                .purchaseDate(ticket.get().getPurchaseDate())
+                .phone(ticket.get().getPhone())
+                .qrcode(qrGeneratorService.generateQRCodeImageToString(ticket.get()))
+                .build();
     }
 
     public List<TicketDto> getAllTickets(){
@@ -183,24 +201,6 @@ public class TicketService {
     private void sendEmailToTicketHolders(Ticket ticket, String qrString){
         //generateQRCodeImage(ticket);
         mailService.sendTicketEMail(ticket, qrString);
-    }
-
-//    private void generateQRCodeImage(Ticket ticket){
-//        String path = getClass().getResource("/templates/QRCode.png").getPath().substring(1);
-//        String qrText = ticket.getTicketId() + "\n" +
-//                ticket.getReservation().getConcert().getConcertName() + "\n" +
-//                ticket.getTicketHolder() + "\n" +
-//                ticket.getTicketHolderEmail();
-//        qrGeneratorService.generateQRCodeImage(qrText,150, 150, path);
-//    }
-
-    private String generateQRCodeImageToString(Ticket ticket){
-        String qrText = ticket.getTicketId() + "\n" +
-                ticket.getReservation().getConcert().getConcertName() + "\n" +
-                ticket.getTicketHolder() + "\n" +
-                ticket.getTicketHolderEmail() + "\n" +
-                ticket.getPurchaseDate();
-        return qrGeneratorService.getQRCodeImageAsBase64(qrText,150, 150);
     }
 
 /*    public List<TicketDto> getTicketsByAttendant(Attendant ticketBuyer){

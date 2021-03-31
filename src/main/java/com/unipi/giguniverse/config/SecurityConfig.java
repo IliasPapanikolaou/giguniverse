@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/","index","/css/*","/js/*").permitAll()
                 .antMatchers("/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/ticket/validate/**").permitAll()
                 .antMatchers("/api/concert/**").permitAll() //TODO: Allow all CRUD for now
                 .antMatchers("/api/reservation/**").permitAll() //TODO: Allow all CRUD for now
 //                .antMatchers("/api/venue/**").hasRole(ApplicationUserRole.OWNER.name())

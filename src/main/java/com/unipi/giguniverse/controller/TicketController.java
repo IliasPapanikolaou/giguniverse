@@ -64,6 +64,13 @@ public class TicketController {
                 .body(ticketService.getTicketsByConcertID(id));
     }
 
+    @GetMapping("/validate/{uuid}")
+    public ResponseEntity<TicketDto> validate(@PathVariable String uuid){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ticketService.validateTicket(uuid));
+    }
+
     @GetMapping("/ticketHolderEmail/{ticketHolderEmail}")
     public ResponseEntity<List<TicketDto>> getTicketByEmail(@PathVariable String ticketHolderEmail){
         return ResponseEntity
