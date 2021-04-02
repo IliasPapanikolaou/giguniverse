@@ -17,7 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.unipi.giguniverse.security.ApplicationUserPermission.VENUE_WRITE;
+import static com.unipi.giguniverse.security.ApplicationUserPermission.*;
 import static com.unipi.giguniverse.security.ApplicationUserRole.ATTENDANT;
 
 @EnableWebSecurity
@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
-                .cors() //TODO: Check CORS security policy
+                .cors()
                 .and()
                 .csrf().disable() //protection for session connects, safe to disable with REST
                 .authorizeRequests()
@@ -45,13 +45,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/ticket/validate/**").permitAll()
-                .antMatchers("/api/concert/**").permitAll() //TODO: Allow all CRUD for now
-                .antMatchers("/api/reservation/**").permitAll() //TODO: Allow all CRUD for now
 //                .antMatchers("/api/venue/**").hasRole(ApplicationUserRole.OWNER.name())
+//                .antMatchers("/api/concert/**").permitAll()
+//                .antMatchers("/api/reservation/**").permitAll()
+//                .antMatchers("/api/ticket/**").permitAll()
                 .antMatchers(HttpMethod.POST ,"/api/venue/**").hasAuthority(VENUE_WRITE.getPermission())
                 .antMatchers(HttpMethod.PUT ,"/api/venue/**").hasAuthority(VENUE_WRITE.getPermission())
                 .antMatchers(HttpMethod.DELETE ,"/api/venue/**").hasAuthority(VENUE_WRITE.getPermission())
-                .antMatchers(HttpMethod.GET, "/api/venue/**").hasAnyRole(ApplicationUserRole.OWNER.name(), ATTENDANT.name())
+                .antMatchers(HttpMethod.POST ,"/api/concert/**").hasAuthority(CONCERT_WRITE.getPermission())
+                .antMatchers(HttpMethod.PUT ,"/api/concert/**").hasAuthority(CONCERT_WRITE.getPermission())
+                .antMatchers(HttpMethod.DELETE ,"/api/concert/**").hasAuthority(CONCERT_WRITE.getPermission())
+                .antMatchers(HttpMethod.POST ,"/api/reservation/**").hasAuthority(RESERVATION_WRITE.getPermission())
+                .antMatchers(HttpMethod.PUT ,"/api/reservation/**").hasAuthority(RESERVATION_WRITE.getPermission())
+                .antMatchers(HttpMethod.DELETE ,"/api/reservation/**").hasAuthority(RESERVATION_WRITE.getPermission())
+                .antMatchers(HttpMethod.POST ,"/api/ticket/**").hasAuthority(TICKET_WRITE.getPermission())
+                .antMatchers(HttpMethod.PUT ,"/api/ticket/**").hasAuthority(TICKET_WRITE.getPermission())
+                .antMatchers(HttpMethod.DELETE ,"/api/ticket/**").hasAuthority(TICKET_WRITE.getPermission())
+                .antMatchers(HttpMethod.GET, "/api/venue/**", "/api/concert/**", "/api/reservation/**",
+                        "/api/ticket/**").hasAnyRole(ApplicationUserRole.OWNER.name(), ATTENDANT.name())
                 .anyRequest()
                 .authenticated();
 

@@ -8,13 +8,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.unipi.giguniverse.security.ApplicationUserPermission.VENUE_READ;
-import static com.unipi.giguniverse.security.ApplicationUserPermission.VENUE_WRITE;
+import static com.unipi.giguniverse.security.ApplicationUserPermission.*;
 
 @AllArgsConstructor
 public enum ApplicationUserRole{
-    ATTENDANT(Sets.newHashSet(VENUE_READ)),
-    OWNER(Sets.newHashSet(VENUE_READ, VENUE_WRITE)),
+    ATTENDANT(Sets.newHashSet(VENUE_READ, CONCERT_READ,
+            TICKET_READ, TICKET_WRITE)),
+    OWNER(Sets.newHashSet(VENUE_READ, VENUE_WRITE,
+            CONCERT_READ, CONCERT_WRITE,
+            TICKET_READ, TICKET_WRITE,
+            RESERVATION_READ, RESERVATION_WRITE)),
     ADMIN(Sets.newHashSet());
 
     private final Set<ApplicationUserPermission> permissions;
