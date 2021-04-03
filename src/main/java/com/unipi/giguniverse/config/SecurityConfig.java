@@ -49,20 +49,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/api/concert/**").permitAll()
 //                .antMatchers("/api/reservation/**").permitAll()
 //                .antMatchers("/api/ticket/**").permitAll()
+                //Venues
                 .antMatchers(HttpMethod.POST ,"/api/venue/**").hasAuthority(VENUE_WRITE.getPermission())
                 .antMatchers(HttpMethod.PUT ,"/api/venue/**").hasAuthority(VENUE_WRITE.getPermission())
                 .antMatchers(HttpMethod.DELETE ,"/api/venue/**").hasAuthority(VENUE_WRITE.getPermission())
+                //Concerts
                 .antMatchers(HttpMethod.POST ,"/api/concert/**").hasAuthority(CONCERT_WRITE.getPermission())
                 .antMatchers(HttpMethod.PUT ,"/api/concert/**").hasAuthority(CONCERT_WRITE.getPermission())
                 .antMatchers(HttpMethod.DELETE ,"/api/concert/**").hasAuthority(CONCERT_WRITE.getPermission())
+                .antMatchers(HttpMethod.GET, "/api/concert/**").permitAll()
+                //Reservations
                 .antMatchers(HttpMethod.POST ,"/api/reservation/**").hasAuthority(RESERVATION_WRITE.getPermission())
                 .antMatchers(HttpMethod.PUT ,"/api/reservation/**").hasAuthority(RESERVATION_WRITE.getPermission())
                 .antMatchers(HttpMethod.DELETE ,"/api/reservation/**").hasAuthority(RESERVATION_WRITE.getPermission())
+                //Tickets
                 .antMatchers(HttpMethod.POST ,"/api/ticket/**").hasAuthority(TICKET_WRITE.getPermission())
                 .antMatchers(HttpMethod.PUT ,"/api/ticket/**").hasAuthority(TICKET_WRITE.getPermission())
                 .antMatchers(HttpMethod.DELETE ,"/api/ticket/**").hasAuthority(TICKET_WRITE.getPermission())
-                .antMatchers(HttpMethod.GET, "/api/venue/**", "/api/concert/**", "/api/reservation/**",
-                        "/api/ticket/**").hasAnyRole(ApplicationUserRole.OWNER.name(), ATTENDANT.name())
+                .antMatchers(HttpMethod.GET, "/api/venue/**", "/api/reservation/**"
+                        ,"/api/ticket/**").hasAnyRole(ApplicationUserRole.OWNER.name(), ATTENDANT.name())
                 .anyRequest()
                 .authenticated();
 
