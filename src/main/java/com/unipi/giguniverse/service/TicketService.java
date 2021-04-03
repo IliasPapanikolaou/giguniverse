@@ -123,17 +123,18 @@ public class TicketService {
     }
 
     public TicketDto validateTicket(String id){
-        Optional<Ticket> ticket = ticketRepository.findById(id);
+        Optional<Ticket> optTicket = ticketRepository.findById(id);
+        Ticket ticket = optTicket.orElseThrow(()->new ApplicationException("Ticket not found"));
         return  TicketDto.builder()
-                .ticketId(ticket.get().getTicketId())
-                .ticketHolder(ticket.get().getTicketHolder())
-                .ticketHolderEmail(ticket.get().getTicketHolderEmail())
-                .concertId(ticket.get().getReservation().getConcert().getConcertId())
-                .concert(concertService.mapConcertToDto(ticket.get().getReservation().getConcert()))
-                .price(ticket.get().getPrice())
-                .purchaseDate(ticket.get().getPurchaseDate())
-                .phone(ticket.get().getPhone())
-                .qrcode(qrGeneratorService.generateQRCodeImageToString(ticket.get()))
+                .ticketId(ticket.getTicketId())
+                .ticketHolder(ticket.getTicketHolder())
+                .ticketHolderEmail(ticket.getTicketHolderEmail())
+                .concertId(ticket.getReservation().getConcert().getConcertId())
+                .concert(concertService.mapConcertToDto(ticket.getReservation().getConcert()))
+                .price(ticket.getPrice())
+                .purchaseDate(ticket.getPurchaseDate())
+                .phone(ticket.getPhone())
+                .qrcode(qrGeneratorService.generateQRCodeImageToString(ticket))
                 .build();
     }
 
