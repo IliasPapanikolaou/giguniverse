@@ -20,6 +20,7 @@ local_var/
 *.iml
 *.ipr
 *.properties
+*.jks
 
 ### NetBeans ###
 /nbproject/private/
